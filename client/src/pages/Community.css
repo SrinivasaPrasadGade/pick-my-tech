@@ -1,0 +1,209 @@
+.community-page {
+  padding: 40px 0;
+  min-height: 100vh;
+}
+
+.community-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.community-header h1 {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.community-header p {
+  font-size: 18px;
+  color: var(--text-light);
+}
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.post-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.author-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.post-date {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.post-category {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.post-category.discussion {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.post-category.review {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.post-category.question {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.post-card h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: var(--text-color);
+}
+
+.post-card p {
+  color: var(--text-light);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.post-device {
+  padding: 8px 12px;
+  background: var(--bg-color);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.post-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.action-btn:hover {
+  color: var(--primary-color);
+}
+
+.action-btn .liked {
+  color: #ff3b30;
+}
+
+.post-views {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.no-posts {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.no-posts p {
+  font-size: 18px;
+  color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+  .community-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
