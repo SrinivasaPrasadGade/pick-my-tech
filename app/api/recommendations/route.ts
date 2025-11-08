@@ -33,13 +33,13 @@ export async function GET() {
         },
       })
 
-      const devicesWithScores = devices.map((device) => ({
+      const devicesWithScores = devices.map((device: { id: string; [key: string]: any }) => ({
         ...device,
         score: calculateRecommendationScore(device, user.preferences),
       }))
 
       return NextResponse.json({
-        recommendations: devicesWithScores.sort((a, b) => (b.score || 0) - (a.score || 0)),
+        recommendations: devicesWithScores.sort((a: { score?: number }, b: { score?: number }) => (b.score || 0) - (a.score || 0)),
       })
     }
 
@@ -56,14 +56,14 @@ export async function GET() {
         take: 20,
       })
 
-      const devicesWithScores = devices.map((device) => ({
+      const devicesWithScores = devices.map((device: { id: string; [key: string]: any }) => ({
         ...device,
         score: calculateRecommendationScore(device, user.preferences),
       }))
 
       return NextResponse.json({
         recommendations: devicesWithScores
-          .sort((a, b) => (b.score || 0) - (a.score || 0))
+          .sort((a: { score?: number }, b: { score?: number }) => (b.score || 0) - (a.score || 0))
           .slice(0, 10),
       })
     }
