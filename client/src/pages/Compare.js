@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FaPlus, FaTimes, FaSearch, FaCheck } from 'react-icons/fa';
+import { FaPlus, FaTimes, FaSearch, FaCheck, FaLightbulb } from 'react-icons/fa';
 import './Compare.css';
+import ComparisonAnalyticsModal from '../components/ComparisonAnalyticsModal';
 
 const Compare = () => {
     const [selectedDevices, setSelectedDevices] = useState([null, null, null]);
@@ -10,6 +11,7 @@ const Compare = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [activeSlot, setActiveSlot] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [showAnalytics, setShowAnalytics] = useState(false);
 
     // Search for devices when query changes
     useEffect(() => {
@@ -270,7 +272,27 @@ const Compare = () => {
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Floating Compare Button */}
+            {
+                selectedDevices.filter(d => d !== null).length >= 2 && (
+                    <div className="floating-compare-container">
+                        <button
+                            className="btn-smart-compare"
+                            onClick={() => setShowAnalytics(true)}
+                        >
+                            <FaLightbulb /> Smart Compare
+                        </button>
+                    </div>
+                )
+            }
+
+            <ComparisonAnalyticsModal
+                isOpen={showAnalytics}
+                onClose={() => setShowAnalytics(false)}
+                devices={selectedDevices}
+            />
+        </div >
     );
 };
 

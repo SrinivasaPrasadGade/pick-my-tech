@@ -51,7 +51,7 @@ const ReviewList = ({ deviceId, refreshTrigger }) => {
                                         alt={review.user?.name || 'User'}
                                         className="reviewer-avatar"
                                     />
-                                    <div>
+                                    <div className="reviewer-details">
                                         <span className="reviewer-name">{review.user?.name || 'Anonymous'}</span>
                                         <span className="review-date">{new Date(review.createdAt).toLocaleDateString()}</span>
                                     </div>
@@ -71,7 +71,7 @@ const ReviewList = ({ deviceId, refreshTrigger }) => {
                             <div className="sentiment-analysis">
                                 <div className="sentiment-header">
                                     <FaRobot className="ai-icon" />
-                                    <span>AI Analysis</span>
+                                    <span className="sentiment-title">AI Analysis</span>
                                     <div
                                         className="sentiment-badge"
                                         style={{ backgroundColor: getSentimentColor(review.sentimentScore, review.sentimentLabel) }}

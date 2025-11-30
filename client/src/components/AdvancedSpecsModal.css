@@ -1,0 +1,227 @@
+.advanced-specs-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.advanced-specs-modal {
+    background: #0f0f13;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    border-radius: 16px;
+    border: 1px solid #333;
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #e0e0e0;
+    font-family: 'JetBrains Mono', monospace;
+    /* Tech/Geek font */
+}
+
+.modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #0f0f13 0%, #1a1a20 100%);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #00ff88;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #fff;
+}
+
+.modal-content {
+    padding: 2rem;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* Card Styles */
+.spec-card {
+    background: #16161c;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #2a2a35;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.spec-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-color: #00ff88;
+}
+
+.spec-card h3 {
+    margin-top: 0;
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+
+/* Chart Placeholders */
+.chart-container {
+    height: 200px;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 5px;
+    padding-top: 20px;
+    position: relative;
+}
+
+/* Thermal Throttling Graph */
+.thermal-graph {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(255, 59, 48, 0.1) 0%, rgba(255, 59, 48, 0) 100%);
+    position: relative;
+    border-bottom: 2px solid #333;
+    border-left: 2px solid #333;
+}
+
+.thermal-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    stroke: #ff3b30;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Performance Bars */
+.perf-bar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.perf-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.perf-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.perf-bar-bg {
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.perf-bar-fill {
+    height: 100%;
+    background: #00ff88;
+    border-radius: 4px;
+    width: 0%;
+    /* Animate to value */
+    transition: width 1s ease-out;
+}
+
+/* Sensor Visual */
+.sensor-visual {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    border-radius: 8px;
+    position: relative;
+}
+
+.sensor-rect {
+    border: 2px solid #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #00ff88;
+    font-weight: bold;
+}
+
+/* Big Number */
+.big-stat {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.stat-unit {
+    font-size: 1rem;
+    color: #888;
+    margin-left: 5px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Scrollbar */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #0f0f13;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

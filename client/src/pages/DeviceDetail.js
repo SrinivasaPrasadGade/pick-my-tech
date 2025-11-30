@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { FaStar, FaExternalLinkAlt, FaInfoCircle, FaHeart, FaShareAlt, FaTimes, FaChartLine } from 'react-icons/fa';
+import { FaStar, FaExternalLinkAlt, FaInfoCircle, FaHeart, FaShareAlt, FaTimes, FaChartLine, FaMicrochip } from 'react-icons/fa';
 import './DeviceDetail.css';
 import PriceHistoryModal from '../components/PriceHistoryModal';
+import AdvancedSpecsModal from '../components/AdvancedSpecsModal';
 import ReviewList from '../components/Reviews/ReviewList';
 import ReviewForm from '../components/Reviews/ReviewForm';
 
@@ -104,6 +105,7 @@ const DeviceDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showPriceHistory, setShowPriceHistory] = useState(false);
+  const [showAdvancedSpecs, setShowAdvancedSpecs] = useState(false);
   const [refreshReviews, setRefreshReviews] = useState(0);
 
   useEffect(() => {
@@ -276,37 +278,68 @@ const DeviceDetail = () => {
                     Best Price: ${Math.min(...prices.map(p => p.price)).toLocaleString()}
                   </p>
                 </div>
-                <button
-                  className="view-history-btn"
-                  onClick={() => setShowPriceHistory(true)}
-                  style={{
-                    marginTop: '1rem',
-                    background: '#1a1a1a',
-                    border: 'none',
-                    color: '#fff',
-                    padding: '0.8rem 1.5rem',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    width: '100%',
-                    justifyContent: 'center',
-                    transition: 'all 0.3s ease',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                  }}
-                >
-                  <FaChartLine /> View Price History
-                </button>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
+                  <button
+                    className="view-history-btn"
+                    onClick={() => setShowPriceHistory(true)}
+                    style={{
+                      background: '#1a1a1a',
+                      border: 'none',
+                      color: '#fff',
+                      padding: '0.8rem 1.5rem',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      flex: 1,
+                      justifyContent: 'center',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    <FaChartLine /> Price History
+                  </button>
+
+                  <button
+                    className="view-specs-btn"
+                    onClick={() => setShowAdvancedSpecs(true)}
+                    style={{
+                      background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
+                      border: '1px solid #00ff88',
+                      color: '#00ff88',
+                      padding: '0.8rem 1.5rem',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      flex: 1,
+                      justifyContent: 'center',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 0 10px rgba(0, 255, 136, 0.2)',
+                      fontWeight: 'bold',
+                      letterSpacing: '1px'
+                    }}
+                  >
+                    <FaMicrochip /> OVERKILL
+                  </button>
+                </div>
+
+                <PriceHistoryModal
+                  isOpen={showPriceHistory}
+                  onClose={() => setShowPriceHistory(false)}
+                  currentPrice={prices.length > 0 ? Math.min(...prices.map(p => p.price)) : 0}
+                  deviceName={device.name}
+                />
+
+                <AdvancedSpecsModal
+                  isOpen={showAdvancedSpecs}
+                  onClose={() => setShowAdvancedSpecs(false)}
+                  deviceName={device.name}
+                />
               </div>
             )}
-
-            <PriceHistoryModal
-              isOpen={showPriceHistory}
-              onClose={() => setShowPriceHistory(false)}
-              currentPrice={prices.length > 0 ? Math.min(...prices.map(p => p.price)) : 0}
-              deviceName={device.name}
-            />
 
             <div className="device-actions">
               <button
