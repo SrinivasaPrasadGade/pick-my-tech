@@ -5,6 +5,8 @@ import axios from 'axios';
 import { FaStar, FaExternalLinkAlt, FaInfoCircle, FaHeart, FaShareAlt, FaTimes, FaChartLine } from 'react-icons/fa';
 import './DeviceDetail.css';
 import PriceHistoryModal from '../components/PriceHistoryModal';
+import ReviewList from '../components/Reviews/ReviewList';
+import ReviewForm from '../components/Reviews/ReviewForm';
 
 // Mock data for fallback
 const mockData = {
@@ -102,6 +104,7 @@ const DeviceDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showPriceHistory, setShowPriceHistory] = useState(false);
+  const [refreshReviews, setRefreshReviews] = useState(0);
 
   useEffect(() => {
     fetchDevice();
@@ -397,6 +400,17 @@ const DeviceDetail = () => {
             </div>
           </div>
         )}
+      </div>
+
+      <div className="container" style={{ marginTop: '2rem' }}>
+        <ReviewForm
+          deviceId={id}
+          onReviewSubmitted={() => setRefreshReviews(prev => prev + 1)}
+        />
+        <ReviewList
+          deviceId={id}
+          refreshTrigger={refreshReviews}
+        />
       </div>
     </div>
   );

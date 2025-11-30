@@ -38,6 +38,7 @@ app.use('/api/chatbot', require('./routes/chatbot'));
 app.use('/api/community', require('./routes/community'));
 app.use('/api/user', require('./routes/user'));
 app.use('/api/prices', require('./routes/prices'));
+app.use('/api/reviews', require('./routes/reviews'));
 
 // Socket.io for real-time features
 io.on('connection', (socket) => {
