@@ -1,0 +1,290 @@
+.compare-page {
+    padding: 40px 0;
+    min-height: 100vh;
+    background-color: #fff;
+}
+
+.compare-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.compare-header h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1d1d1f;
+}
+
+.compare-header p {
+    font-size: 21px;
+    color: #86868b;
+}
+
+/* Grid Layout */
+.compare-grid-header {
+    display: grid;
+    grid-template-columns: 200px repeat(3, 1fr);
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 100;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.device-col {
+    position: relative;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Selected Device Card */
+.selected-device-card {
+    text-align: center;
+    width: 100%;
+    animation: fadeIn 0.3s ease;
+}
+
+.selected-device-card img {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.selected-device-card h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1d1d1f;
+}
+
+.device-price {
+    font-size: 17px;
+    color: #1d1d1f;
+    margin-bottom: 16px;
+}
+
+.view-details-link {
+    font-size: 14px;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.view-details-link:hover {
+    text-decoration: underline;
+}
+
+.btn-remove {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    background: #e5e5e5;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-remove:hover {
+    background: #d1d1d1;
+    color: #333;
+}
+
+/* Empty Slot */
+.empty-slot {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #e5e5e5;
+    border-radius: 16px;
+    min-height: 300px;
+}
+
+.btn-add-device {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #0066cc;
+    transition: transform 0.2s;
+}
+
+.btn-add-device:hover {
+    transform: scale(1.05);
+}
+
+.plus-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #f5f5f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.btn-add-device span {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+/* Search Dropdown */
+.device-search-dropdown {
+    width: 100%;
+    height: 100%;
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #0066cc;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+.search-input-wrapper input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+}
+
+.search-results {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.search-result-item:hover {
+    background: #f5f5f7;
+}
+
+.search-result-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+/* Comparison Sections */
+.compare-section {
+    margin-bottom: 60px;
+}
+
+.compare-section h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #d2d2d7;
+    color: #1d1d1f;
+}
+
+.spec-row {
+    display: grid;
+    grid-template-columns: 200px repeat(3, 1fr);
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid #f5f5f7;
+}
+
+.spec-label {
+    font-weight: 600;
+    color: #1d1d1f;
+    font-size: 15px;
+}
+
+.spec-value {
+    font-size: 17px;
+    color: #1d1d1f;
+    line-height: 1.5;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+
+    .compare-grid-header,
+    .spec-row {
+        grid-template-columns: 150px repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .compare-grid-header {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 20px;
+        margin-left: -20px;
+        margin-right: -20px;
+        padding-left: 20px;
+    }
+
+    .spec-label-col {
+        display: none;
+    }
+
+    .device-col {
+        min-width: 280px;
+        border-right: 1px solid #f5f5f7;
+        padding-right: 20px;
+    }
+
+    .compare-sections {
+        display: none;
+        /* Hide full comparison on mobile for now, or implement a different view */
+    }
+
+    .compare-page::after {
+        content: "Please view on desktop for full comparison";
+        display: block;
+        text-align: center;
+        padding: 40px;
+        color: #86868b;
+    }
+}

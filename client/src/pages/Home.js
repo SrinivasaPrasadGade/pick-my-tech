@@ -167,7 +167,7 @@ const Home = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Link to={`/news/${news._id}`} className="news-card">
+                  <a href={news.url} target="_blank" rel="noopener noreferrer" className="news-card">
                     <div className="news-image">
                       <img src={news.imageUrl || 'https://via.placeholder.com/400'} alt={news.title} />
                     </div>
@@ -179,7 +179,7 @@ const Home = () => {
                         {new Date(news.publishedAt).toLocaleDateString()}
                       </span>
                     </div>
-                  </Link>
+                  </a>
                 </motion.div>
               ))}
             </div>

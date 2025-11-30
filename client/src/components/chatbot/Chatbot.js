@@ -10,7 +10,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     {
       type: 'bot',
-      text: "Hi! I'm Maverick, your tech assistant. How can I help you today?",
+      text: "Hi! 👋 I'm Maverick, your tech assistant. How can I help you today?",
       timestamp: new Date()
     }
   ]);
@@ -24,7 +24,7 @@ const Chatbot = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isOpen]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -56,8 +56,8 @@ const Chatbot = () => {
       if (botResponse.action === 'navigate' && botResponse.data?.path) {
         setTimeout(() => {
           navigate(botResponse.data.path);
-          setIsOpen(false);
-        }, 1000);
+          // Don't close automatically for navigation, let user read the message
+        }, 1500);
       } else if (botResponse.action === 'search' && botResponse.data) {
         setTimeout(() => {
           const params = new URLSearchParams();
@@ -65,13 +65,11 @@ const Chatbot = () => {
           if (botResponse.data.brand) params.append('brand', botResponse.data.brand);
           if (botResponse.data.maxPrice) params.append('maxPrice', botResponse.data.maxPrice);
           navigate(`/devices?${params.toString()}`);
-          setIsOpen(false);
-        }, 1000);
+        }, 1500);
       } else if (botResponse.action === 'recommend') {
         setTimeout(() => {
           navigate('/recommendations');
-          setIsOpen(false);
-        }, 1000);
+        }, 1500);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -90,9 +88,59 @@ const Chatbot = () => {
     setInput(suggestion);
     // Auto-send suggestion
     setTimeout(() => {
-      const event = new Event('submit');
-      handleSend(event);
+      // We need to trigger the send logic manually since we can't easily simulate a form submit event with the state update pending
+      // So we'll just call a version of handleSend or set a flag
+      // For simplicity, let's just set the input and let the user press enter, OR better:
+      // We can't easily reuse handleSend because it expects an event. 
+      // Let's refactor handleSend to be callable without event or just duplicate logic for now to be safe
+      // Actually, the previous implementation had a hacky event simulation. Let's do it properly.
+      sendText(suggestion);
     }, 100);
+  };
+
+  const sendText = async (text) => {
+    if (!text.trim() || loading) return;
+
+    const userMessage = {
+      type: 'user',
+      text: text,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    try {
+      const res = await axios.post('/api/chatbot', { message: text });
+      const botResponse = {
+        type: 'bot',
+        text: res.data.response,
+        suggestions: res.data.suggestions,
+        action: res.data.action,
+        data: res.data.data,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, botResponse]);
+
+      if (botResponse.action === 'navigate' && botResponse.data?.path) {
+        setTimeout(() => navigate(botResponse.data.path), 1500);
+      } else if (botResponse.action === 'search' && botResponse.data) {
+        setTimeout(() => {
+          const params = new URLSearchParams();
+          if (botResponse.data.category) params.append('category', botResponse.data.category);
+          if (botResponse.data.brand) params.append('brand', botResponse.data.brand);
+          if (botResponse.data.maxPrice) params.append('maxPrice', botResponse.data.maxPrice);
+          navigate(`/devices?${params.toString()}`);
+        }, 1500);
+      } else if (botResponse.action === 'recommend') {
+        setTimeout(() => navigate('/recommendations'), 1500);
+      }
+    } catch (error) {
+      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, error occurred.', timestamp: new Date() }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const quickActions = [
@@ -101,6 +149,21 @@ const Chatbot = () => {
     { text: 'Get recommendations', action: 'Get recommendations' },
     { text: 'Tech news', action: 'Show tech news' }
   ];
+
+  // Helper to render text with newlines and bold
+  const renderText = (text) => {
+    return text.split('\n').map((line, i) => (
+      <React.Fragment key={i}>
+        {line.split(/(\*\*.*?\*\*)/).map((part, j) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={j}>{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        })}
+        <br />
+      </React.Fragment>
+    ));
+  };
 
   return (
     <>
@@ -130,7 +193,7 @@ const Chatbot = () => {
             {messages.map((msg, index) => (
               <div key={index} className={`message ${msg.type}`}>
                 <div className="message-content">
-                  <p>{msg.text}</p>
+                  <p>{renderText(msg.text)}</p>
                   {msg.suggestions && msg.suggestions.length > 0 && (
                     <div className="suggestions">
                       {msg.suggestions.map((suggestion, idx) => (

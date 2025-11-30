@@ -56,6 +56,11 @@ const Navbar = () => {
               Community
             </Link>
           </li>
+          <li>
+            <Link to="/compare" onClick={() => setMobileMenuOpen(false)}>
+              Compare
+            </Link>
+          </li>
           {user ? (
             <>
               <li>

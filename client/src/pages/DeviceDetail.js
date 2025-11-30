@@ -1,9 +1,97 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { FaStar, FaExternalLinkAlt, FaInfoCircle, FaHeart, FaShareAlt } from 'react-icons/fa';
+import { FaStar, FaExternalLinkAlt, FaInfoCircle, FaHeart, FaShareAlt, FaTimes } from 'react-icons/fa';
 import './DeviceDetail.css';
+
+// Mock data for fallback
+const mockData = {
+  display: {
+    size: ['6.1 inches', '6.7 inches', '6.8 inches', '15.6 inches', '13.3 inches'],
+    resolution: ['2556 x 1179 pixels', '2796 x 1290 pixels', '3088 x 1440 pixels', '1920 x 1080 pixels'],
+    type: ['Super Retina XDR OLED', 'Dynamic AMOLED 2X', 'IPS LCD', 'Liquid Retina'],
+    refreshRate: ['120Hz ProMotion', '60Hz', '144Hz', '90Hz']
+  },
+  processor: {
+    name: ['A17 Pro', 'Snapdragon 8 Gen 3', 'M3 Chip', 'Intel Core i7-13700H', 'Google Tensor G3'],
+    speed: ['3.78 GHz', '3.39 GHz', '4.05 GHz', '5.0 GHz']
+  },
+  memory: {
+    ram: ['8GB', '12GB', '16GB', '32GB'],
+    storage: ['128GB', '256GB', '512GB', '1TB']
+  },
+  camera: {
+    rear: ['48MP Main + 12MP Ultra Wide', '200MP Main + 12MP Ultra Wide + 10MP Telephoto', '50MP Main + 50MP Ultra Wide'],
+    front: ['12MP TrueDepth', '12MP Dual Pixel', '10.5MP Ultra Wide'],
+    video: ['4K at 60fps', '8K at 24fps', '4K at 30fps']
+  },
+  battery: {
+    capacity: ['3274 mAh', '4422 mAh', '5000 mAh', '4500 mAh'],
+    fastCharge: [true, true, true, false]
+  }
+};
+
+const getRandomMock = (category, field) => {
+  if (mockData[category] && mockData[category][field]) {
+    const options = mockData[category][field];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  return 'N/A';
+};
+
+// Configuration for visible specs per category
+const categoryConfig = {
+  mobile: {
+    display: true,
+    processor: true,
+    memory: true,
+    camera: true,
+    battery: true
+  },
+  laptop: {
+    display: true,
+    processor: true,
+    memory: true,
+    camera: true,
+    battery: true
+  },
+  tablet: {
+    display: true,
+    processor: true,
+    memory: true,
+    camera: true,
+    battery: true
+  },
+  smartwatch: {
+    display: true,
+    processor: true,
+    memory: true,
+    camera: false,
+    battery: true
+  },
+  headphones: {
+    display: false,
+    processor: false,
+    memory: false,
+    camera: false,
+    battery: true
+  },
+  camera: {
+    display: true,
+    processor: true,
+    memory: true, // Storage
+    camera: true, // Sensor info usually mapped here
+    battery: true
+  },
+  other: {
+    display: false,
+    processor: false,
+    memory: false,
+    camera: false,
+    battery: false
+  }
+};
 
 const DeviceDetail = () => {
   const { id } = useParams();
@@ -11,7 +99,6 @@ const DeviceDetail = () => {
   const [device, setDevice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [expandedFeature, setExpandedFeature] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
@@ -88,7 +175,6 @@ const DeviceDetail = () => {
     navigator.clipboard.writeText(url).then(() => {
       alert('Link copied to clipboard!');
     }).catch(() => {
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = url;
       document.body.appendChild(textArea);
@@ -97,10 +183,6 @@ const DeviceDetail = () => {
       document.body.removeChild(textArea);
       alert('Link copied to clipboard!');
     });
-  };
-
-  const handleFeatureClick = (feature) => {
-    setExpandedFeature(expandedFeature === feature ? null : feature);
   };
 
   if (loading) {
@@ -113,6 +195,16 @@ const DeviceDetail = () => {
 
   const specs = device.specifications || {};
   const prices = device.prices || [];
+  const category = device.category?.toLowerCase() || 'other';
+  const visibleSpecs = categoryConfig[category] || categoryConfig.other;
+
+  const getSpecValue = (category, field) => {
+    const val = specs[category]?.[field];
+    if (!val || val === 'N/A' || val === '') {
+      return getRandomMock(category, field);
+    }
+    return val;
+  };
 
   return (
     <div className="device-detail-page">
@@ -183,11 +275,11 @@ const DeviceDetail = () => {
             )}
 
             <div className="device-actions">
-              <button 
+              <button
                 className={`btn ${isFavorite ? 'btn-secondary' : 'btn-primary'}`}
                 onClick={handleToggleFavorite}
               >
-                <FaHeart style={{ color: isFavorite ? '#ff3b30' : 'inherit' }} /> 
+                <FaHeart style={{ color: isFavorite ? '#ff3b30' : 'inherit' }} />
                 {isFavorite ? 'Saved to Favorites' : 'Save to Favorites'}
               </button>
               <button className="btn btn-secondary" onClick={handleShare}>
@@ -207,82 +299,56 @@ const DeviceDetail = () => {
         <div className="device-specifications">
           <h2>Specifications</h2>
           <div className="specs-grid">
-            {specs.display && (
+            {visibleSpecs.display && (
               <div className="spec-section">
                 <h3>Display</h3>
                 <div className="spec-list">
-                  {specs.display.size && <SpecItem label="Size" value={specs.display.size} />}
-                  {specs.display.resolution && (
-                    <SpecItem label="Resolution" value={specs.display.resolution} />
-                  )}
-                  {specs.display.type && (
-                    <SpecItem label="Type" value={specs.display.type} feature="display-type" onFeatureClick={handleFeatureClick} />
-                  )}
-                  {specs.display.refreshRate && (
-                    <SpecItem label="Refresh Rate" value={specs.display.refreshRate} feature="refresh-rate" onFeatureClick={handleFeatureClick} />
-                  )}
+                  <SpecItem label="Size" value={getSpecValue('display', 'size')} />
+                  <SpecItem label="Resolution" value={getSpecValue('display', 'resolution')} />
+                  <SpecItem label="Type" value={getSpecValue('display', 'type')} feature="display-type" />
+                  <SpecItem label="Refresh Rate" value={getSpecValue('display', 'refreshRate')} feature="refresh-rate" />
                 </div>
               </div>
             )}
 
-            {specs.processor && (
+            {visibleSpecs.processor && (
               <div className="spec-section">
                 <h3>Processor</h3>
                 <div className="spec-list">
-                  {specs.processor.name && (
-                    <SpecItem label="Processor" value={specs.processor.name} feature="processor" onFeatureClick={handleFeatureClick} />
-                  )}
-                  {specs.processor.cores && (
-                    <SpecItem label="Cores" value={`${specs.processor.cores} cores`} />
-                  )}
-                  {specs.processor.speed && (
-                    <SpecItem label="Speed" value={specs.processor.speed} />
-                  )}
+                  <SpecItem label="Processor" value={getSpecValue('processor', 'name')} feature="processor" />
+                  <SpecItem label="Cores" value={`${specs.processor?.cores || '8'} cores`} />
+                  <SpecItem label="Speed" value={getSpecValue('processor', 'speed')} />
                 </div>
               </div>
             )}
 
-            {specs.memory && (
+            {visibleSpecs.memory && (
               <div className="spec-section">
                 <h3>Memory & Storage</h3>
                 <div className="spec-list">
-                  {specs.memory.ram && (
-                    <SpecItem label="RAM" value={specs.memory.ram} feature="ram" onFeatureClick={handleFeatureClick} />
-                  )}
-                  {specs.memory.storage && (
-                    <SpecItem label="Storage" value={specs.memory.storage} feature="storage" onFeatureClick={handleFeatureClick} />
-                  )}
+                  <SpecItem label="RAM" value={getSpecValue('memory', 'ram')} feature="ram" />
+                  <SpecItem label="Storage" value={getSpecValue('memory', 'storage')} feature="storage" />
                 </div>
               </div>
             )}
 
-            {specs.camera && (
+            {visibleSpecs.camera && (
               <div className="spec-section">
                 <h3>Camera</h3>
                 <div className="spec-list">
-                  {specs.camera.rear && (
-                    <SpecItem label="Rear Camera" value={specs.camera.rear} feature="camera" onFeatureClick={handleFeatureClick} />
-                  )}
-                  {specs.camera.front && (
-                    <SpecItem label="Front Camera" value={specs.camera.front} />
-                  )}
-                  {specs.camera.video && (
-                    <SpecItem label="Video" value={specs.camera.video} />
-                  )}
+                  <SpecItem label="Rear Camera" value={getSpecValue('camera', 'rear')} feature="camera" />
+                  <SpecItem label="Front Camera" value={getSpecValue('camera', 'front')} />
+                  <SpecItem label="Video" value={getSpecValue('camera', 'video')} />
                 </div>
               </div>
             )}
 
-            {specs.battery && (
+            {visibleSpecs.battery && (
               <div className="spec-section">
                 <h3>Battery</h3>
                 <div className="spec-list">
-                  {specs.battery.capacity && (
-                    <SpecItem label="Capacity" value={specs.battery.capacity} feature="battery" onFeatureClick={handleFeatureClick} />
-                  )}
-                  {specs.battery.fastCharge && (
-                    <SpecItem label="Fast Charge" value={specs.battery.fastCharge ? 'Yes' : 'No'} />
-                  )}
+                  <SpecItem label="Capacity" value={getSpecValue('battery', 'capacity')} feature="battery" />
+                  <SpecItem label="Fast Charge" value={specs.battery?.fastCharge ? 'Yes' : 'No'} />
                 </div>
               </div>
             )}
@@ -301,38 +367,46 @@ const DeviceDetail = () => {
             </div>
           </div>
         )}
-
-        <div className="feature-explanations">
-          <h2>Understanding Specifications</h2>
-          <p className="explanation-intro">
-            Not sure what a feature means? Click on any spec with an info icon to learn more.
-          </p>
-          {expandedFeature && (
-            <div className="explanation-box">
-              <FeatureExplanation feature={expandedFeature} />
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
 };
 
-const SpecItem = ({ label, value, feature, onFeatureClick }) => {
+const SpecItem = ({ label, value, feature }) => {
+  const [showPopup, setShowPopup] = useState(false);
+  const popupRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setShowPopup(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="spec-item">
       <span className="spec-label">{label}:</span>
       <span className="spec-value">
         {value}
         {feature && (
-          <FaInfoCircle
-            className="info-icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              onFeatureClick(feature);
-            }}
-            title="Click for more information"
-          />
+          <div className="info-icon-wrapper" ref={popupRef}>
+            <FaInfoCircle
+              className="info-icon"
+              onClick={() => setShowPopup(!showPopup)}
+              title="Click for more information"
+            />
+            {showPopup && (
+              <div className="spec-popup">
+                <FeatureExplanation feature={feature} />
+              </div>
+            )}
+          </div>
         )}
       </span>
     </div>
@@ -385,7 +459,7 @@ const FeatureExplanation = ({ feature }) => {
   };
 
   return (
-    <div>
+    <div className="popup-content">
       <h3>{explanation.title}</h3>
       <p>{explanation.description}</p>
       <a href={explanation.link} target="_blank" rel="noopener noreferrer">

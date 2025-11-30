@@ -148,23 +148,26 @@ const Devices = () => {
               </select>
             </div>
 
-            <button
-              className="btn-clear"
-              onClick={() => {
-                setFilters({
-                  category: '',
-                  brand: '',
-                  search: '',
-                  minPrice: '',
-                  maxPrice: '',
-                  sort: 'createdAt',
-                  order: 'desc'
-                });
-                setSearchParams({});
-              }}
-            >
-              Clear Filters
-            </button>
+            <div className="filter-group">
+              <label style={{ visibility: 'hidden' }}>Clear</label>
+              <button
+                className="btn-clear"
+                onClick={() => {
+                  setFilters({
+                    category: '',
+                    brand: '',
+                    search: '',
+                    minPrice: '',
+                    maxPrice: '',
+                    sort: 'createdAt',
+                    order: 'desc'
+                  });
+                  setSearchParams({});
+                }}
+              >
+                Clear Filters
+              </button>
+            </div>
             <button
               className="btn-filter-toggle"
               onClick={() => setShowFilters(false)}

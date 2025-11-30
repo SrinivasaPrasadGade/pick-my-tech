@@ -34,11 +34,16 @@ router.get('/', optional, async (req, res) => {
     const sortOptions = {};
     sortOptions[sort] = order === 'asc' ? 1 : -1;
 
+    console.log('Executing Device query:', JSON.stringify(query));
+    console.log('Sort options:', JSON.stringify(sortOptions));
+
     const devices = await Device.find(query)
       .sort(sortOptions)
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();
+
+    console.log(`Found ${devices.length} devices`);
 
     const total = await Device.countDocuments(query);
 

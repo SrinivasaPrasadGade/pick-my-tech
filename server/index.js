@@ -22,6 +22,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Debug logging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/devices', require('./routes/devices'));
@@ -36,11 +42,11 @@ app.use('/api/prices', require('./routes/prices'));
 // Socket.io for real-time features
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-  
+
   socket.on('join-room', (roomId) => {
     socket.join(roomId);
   });
-  
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
@@ -75,48 +81,48 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5001;
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pickmytech')
-.then(() => {
-  console.log('MongoDB connected');
-  
-  // Schedule news fetch job - runs daily at 2 AM
-  cron.schedule('0 2 * * *', async () => {
-    try {
-      const axios = require('axios');
-      await axios.post(`http://localhost:${PORT}/api/news/fetch`);
-      console.log('✅ Daily news fetch completed');
-    } catch (error) {
-      console.error('Error in scheduled news fetch:', error.message);
-    }
-  });
-  
-  // Initial news fetch on server start (optional - can be removed if not needed)
-  setTimeout(async () => {
-    try {
-      const axios = require('axios');
-      await axios.post(`http://localhost:${PORT}/api/news/fetch`);
-      console.log('✅ Initial news fetch completed');
-    } catch (error) {
-      console.log('Initial news fetch skipped (normal if no news yet)');
-    }
-  }, 5000);
-  
-  server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  .then(() => {
+    console.log('MongoDB connected');
+
+    // Schedule news fetch job - runs daily at 2 AM
+    cron.schedule('0 2 * * *', async () => {
+      try {
+        const axios = require('axios');
+        await axios.post(`http://localhost:${PORT}/api/news/fetch`);
+        console.log('✅ Daily news fetch completed');
+      } catch (error) {
+        console.error('Error in scheduled news fetch:', error.message);
+      }
+    });
+
+    // Initial news fetch on server start (optional - can be removed if not needed)
+    setTimeout(async () => {
+      try {
+        const axios = require('axios');
+        await axios.post(`http://localhost:${PORT}/api/news/fetch`);
+        console.log('✅ Initial news fetch completed');
+      } catch (error) {
+        console.log('Initial news fetch skipped (normal if no news yet)');
+      }
+    }, 5000);
+
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    })
+      .on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+          console.error(`Port ${PORT} is already in use. Please free the port or use a different PORT in your .env file.`);
+          process.exit(1);
+        } else {
+          console.error('Server error:', err);
+          process.exit(1);
+        }
+      });
   })
-  .on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${PORT} is already in use. Please free the port or use a different PORT in your .env file.`);
-      process.exit(1);
-    } else {
-      console.error('Server error:', err);
-      process.exit(1);
-    }
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
   });
-})
-.catch((err) => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
 
 module.exports = { io };
 

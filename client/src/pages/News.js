@@ -59,7 +59,7 @@ const News = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link to={`/news/${item._id}`} className="news-card-large">
+                <a href={item.url} target="_blank" rel="noopener noreferrer" className="news-card-large">
                   <div className="news-image-large">
                     <img
                       src={item.imageUrl || 'https://via.placeholder.com/600'}
@@ -83,7 +83,7 @@ const News = () => {
                       )}
                     </div>
                   </div>
-                </Link>
+                </a>
               </motion.div>
             ))}
           </div>
