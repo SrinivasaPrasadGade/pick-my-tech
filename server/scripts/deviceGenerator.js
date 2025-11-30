@@ -44,16 +44,53 @@ const getImageUrl = (brand, category, name) => {
     return imageMap[brand][category];
   }
 
-  // Generic images by category
+  // Generic images by category (arrays for variety)
   const categoryImages = {
-    'mobile': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
-    'laptop': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80',
-    'tablet': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
-    'smartwatch': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80',
-    'headphones': 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80'
+    'mobile': [
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
+      'https://images.unsplash.com/photo-1598327105666-5b89351aff23?w=800&q=80',
+      'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=800&q=80',
+      'https://images.unsplash.com/photo-1533228100845-08145b01de14?w=800&q=80',
+      'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=800&q=80'
+    ],
+    'laptop': [
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80',
+      'https://images.unsplash.com/photo-1531297461136-82lw9b21085ab?w=800&q=80',
+      'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&q=80',
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&q=80',
+      'https://images.unsplash.com/photo-1593642632823-8f78536788c6?w=800&q=80'
+    ],
+    'tablet': [
+      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
+      'https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=800&q=80',
+      'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=800&q=80',
+      'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=800&q=80',
+      'https://images.unsplash.com/photo-1589739900243-4b52cd9b104e?w=800&q=80'
+    ],
+    'smartwatch': [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80',
+      'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80',
+      'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800&q=80',
+      'https://images.unsplash.com/photo-1544117519-31a4b719223d?w=800&q=80',
+      'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80'
+    ],
+    'headphones': [
+      'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
+      'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80',
+      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=80',
+      'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80'
+    ]
   };
 
-  return categoryImages[category] || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
+  if (categoryImages[category]) {
+    const images = categoryImages[category];
+    // Use a simple hash of the name to pick a consistent random image
+    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return images[hash % images.length];
+  }
+
+  return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
 };
 
 const generateDevice = (template, variations = {}) => {

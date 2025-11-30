@@ -411,9 +411,12 @@ const seedDatabase = async () => {
       console.log('Created test user for community posts');
     }
 
+    // Shuffle devices to ensure a mix of categories in the default view
+    const shuffledDevices = [...devices].sort(() => Math.random() - 0.5);
+
     // Seed devices
-    const insertedDevices = await Device.insertMany(devices);
-    console.log(`✓ Seeded ${devices.length} devices`);
+    const insertedDevices = await Device.insertMany(shuffledDevices);
+    console.log(`✓ Seeded ${shuffledDevices.length} devices`);
 
     // Seed news
     await News.insertMany(newsItems);
