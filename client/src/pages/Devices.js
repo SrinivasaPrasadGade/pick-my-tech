@@ -21,61 +21,8 @@ const Devices = () => {
   const [categories, setCategories] = useState([]);
   const [showFilters, setShowFilters] = useState(true);
 
-  // Device Image Mapping
-  const getDeviceImage = (device) => {
-    const name = device.name.toLowerCase();
-    const brand = device.brand.toLowerCase();
-
-    // Specific device mappings
-    if (name.includes('iphone 15 pro')) return 'https://images.unsplash.com/photo-1696446701796-da61225697cc?w=800&auto=format&fit=crop';
-    if (name.includes('iphone 15')) return 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&auto=format&fit=crop';
-    if (name.includes('iphone 14')) return 'https://images.unsplash.com/photo-1663499482523-1c0c167dd2a7?w=800&auto=format&fit=crop';
-
-    if (name.includes('s24 ultra')) return 'https://images.unsplash.com/photo-1706606991536-e3204238b34e?w=800&auto=format&fit=crop';
-    if (name.includes('s24')) return 'https://images.unsplash.com/photo-1706709855523-64433d2d2a48?w=800&auto=format&fit=crop';
-    if (name.includes('s23')) return 'https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=800&auto=format&fit=crop';
-
-    if (name.includes('pixel 8 pro')) return 'https://images.unsplash.com/photo-1696321727327-023a7392658a?w=800&auto=format&fit=crop';
-    if (name.includes('pixel 8')) return 'https://images.unsplash.com/photo-1698744766863-74e27f0525c2?w=800&auto=format&fit=crop';
-    if (name.includes('pixel 7')) return 'https://images.unsplash.com/photo-1665912018805-492723321561?w=800&auto=format&fit=crop';
-
-    if (name.includes('xiaomi 14')) return 'https://images.unsplash.com/photo-1709666099516-793540e53a28?w=800&auto=format&fit=crop';
-    if (name.includes('redmi note')) return 'https://images.unsplash.com/photo-1675789659426-3f3603c42878?w=800&auto=format&fit=crop';
-
-    if (name.includes('oneplus 12')) return 'https://images.unsplash.com/photo-1706366579893-684c59299496?w=800&auto=format&fit=crop';
-
-    // Fallback based on brand
-    if (brand === 'apple') return 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop';
-    if (brand === 'samsung') return 'https://images.unsplash.com/photo-1610945265078-38584e2690e0?w=800&auto=format&fit=crop';
-    if (brand === 'google') return 'https://images.unsplash.com/photo-1598327105666-5b89351aff23?w=800&auto=format&fit=crop';
-    if (brand === 'sony') return 'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=800&auto=format&fit=crop';
-    if (brand === 'dell') return 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&auto=format&fit=crop';
-    if (brand === 'hp') return 'https://images.unsplash.com/photo-1589561084283-930aa7b1ce50?w=800&auto=format&fit=crop';
-
-    // Generic fallbacks
-    if (device.category === 'laptop') return 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&auto=format&fit=crop';
-    if (device.category === 'tablet') return 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop';
-    if (device.category === 'smartwatch') return 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&auto=format&fit=crop';
-    if (device.category === 'headphones') return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop';
-
-    return device.image || 'https://via.placeholder.com/300';
-  };
-
   useEffect(() => {
     fetchBrandsAndCategories();
-  }, []);
-
-  // Sync state with URL params
-  useEffect(() => {
-    setFilters(prev => ({
-      ...prev,
-      category: searchParams.get('category') || '',
-      brand: searchParams.get('brand') || '',
-      search: searchParams.get('search') || ''
-    }));
-  }, [searchParams]);
-
-  useEffect(() => {
     fetchDevices();
   }, [filters]);
 
@@ -99,9 +46,6 @@ const Devices = () => {
       Object.keys(filters).forEach(key => {
         if (filters[key]) params.append(key, filters[key]);
       });
-      // Set limit to 12
-      params.append('limit', '12');
-
       const res = await axios.get(`/api/devices?${params.toString()}`);
       setDevices(res.data.devices || []);
     } catch (error) {
@@ -112,15 +56,13 @@ const Devices = () => {
   };
 
   const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-
-    const newParams = new URLSearchParams(searchParams);
-    if (value) {
-      newParams.set(key, value);
-    } else {
-      newParams.delete(key);
-    }
+    setFilters(prev => ({ ...prev, [key]: value }));
+    const newParams = new URLSearchParams();
+    Object.keys({ ...filters, [key]: value }).forEach(k => {
+      if (filters[k] || (k === key && value)) {
+        newParams.append(k, filters[k] || (k === key ? value : ''));
+      }
+    });
     setSearchParams(newParams);
   };
 
@@ -254,7 +196,7 @@ const Devices = () => {
             {devices.map(device => (
               <Link key={device._id} to={`/devices/${device._id}`} className="device-card">
                 <div className="device-image">
-                  <img src={getDeviceImage(device)} alt={device.name} />
+                  <img src={device.image || 'https://via.placeholder.com/300'} alt={device.name} />
                 </div>
                 <div className="device-info">
                   <h3>{device.name}</h3>

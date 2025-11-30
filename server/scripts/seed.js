@@ -10,13 +10,7 @@ const { generateCommunityPosts } = require('./generateCommunity');
 dotenv.config();
 
 // Generate all 200 devices
-const allDevices = generateAllDevices();
-
-// Shuffle devices to ensure a mix of categories in the initial view
-const devices = allDevices
-  .map(value => ({ value, sort: Math.random() }))
-  .sort((a, b) => a.sort - b.sort)
-  .map(({ value }) => value);
+const devices = generateAllDevices();
 
 // Keep original seed devices for reference (optional - you can remove this if you want)
 const originalDevices = [
