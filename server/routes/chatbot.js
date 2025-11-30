@@ -6,7 +6,7 @@ const News = require('../models/News');
 const Community = require('../models/Community');
 
 // Enhanced rule-based chatbot
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
 
 // Enhanced rule-based chatbot
 const getChatbotResponse = async (message, userId) => {
@@ -120,16 +120,28 @@ const getChatbotResponse = async (message, userId) => {
     };
   }
 
-  // 8. LLM Fallback (Google Gemini)
+  // 8. LLM Fallback (Groq)
   try {
-    if (process.env.GEMINI_API_KEY) {
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    if (process.env.GROQ_API_KEY) {
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-      const prompt = `You are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully.\n\nQuestion: ${message}`;
+      const completion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: "system",
+            content: "You are Maverick, a helpful tech assistant for PickMyTech. Answer concisely and helpfully."
+          },
+          {
+            role: "user",
+            content: message
+          }
+        ],
+        model: "llama3-8b-8192",
+        temperature: 0.7,
+        max_tokens: 200,
+      });
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
+      const text = completion.choices[0]?.message?.content;
 
       if (text) {
         return {
@@ -139,7 +151,7 @@ const getChatbotResponse = async (message, userId) => {
       }
     }
   } catch (error) {
-    console.error('Gemini Error:', error.message);
+    console.error('Groq Error:', error.message);
     // Fall through to default response
   }
 
