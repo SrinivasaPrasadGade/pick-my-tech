@@ -147,49 +147,113 @@ const ComparisonAnalyticsModal = ({ isOpen, onClose, devices }) => {
 
     return (
         <div className="comparison-analytics-overlay" onClick={onClose}>
-            <div className="comparison-analytics-modal dark-mode" onClick={e => e.stopPropagation()}>
+            <div className="comparison-analytics-modal" onClick={e => e.stopPropagation()}>
                 <div className="analytics-header">
                     <h2><FaLightbulb color="#ffc107" /> Smart Comparison Insights</h2>
                     <button className="close-btn" onClick={onClose}><FaTimes /></button>
                 </div>
 
                 <div className="analytics-content">
-                    <div className="summary-box">
-                        <div className="device-summary">
-                            <h3>{d1.name}</h3>
-                            <div className="win-count">{d1Wins}</div>
-                            <div className="win-label">Key Advantages</div>
+                    <div className="comparison-grid">
+                        {/* Device 1 Column */}
+                        <div className="device-column">
+                            <div className="column-header">
+                                <h3>{d1.name}</h3>
+                                <div className="device-image-placeholder">
+                                    <img src={d1.image || 'https://via.placeholder.com/150'} alt={d1.name} />
+                                </div>
+                            </div>
+
+                            <div className="pros-cons-section">
+                                <div className="section-block advantages">
+                                    <h4>Advantages</h4>
+                                    {insights.filter(i => i.winner === d1.name).length > 0 ? (
+                                        <ul>
+                                            {insights.filter(i => i.winner === d1.name).map((insight, idx) => (
+                                                <li key={idx}>
+                                                    <span className="icon">{insight.icon}</span>
+                                                    <span className="text">{insight.text}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="empty-text">No clear advantages in analyzed specs.</p>
+                                    )}
+                                </div>
+
+                                <div className="section-block disadvantages">
+                                    <h4>Disadvantages</h4>
+                                    {insights.filter(i => i.winner === d2.name).length > 0 ? (
+                                        <ul>
+                                            {insights.filter(i => i.winner === d2.name).map((insight, idx) => (
+                                                <li key={idx}>
+                                                    <span className="icon">⚠️</span>
+                                                    <span className="text">Lacks {insight.category} advantage held by {d2.name}.</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="empty-text">No clear disadvantages in analyzed specs.</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        <div className="device-summary">
-                            <h3>{d2.name}</h3>
-                            <div className="win-count">{d2Wins}</div>
-                            <div className="win-label">Key Advantages</div>
+
+                        {/* Divider */}
+                        <div className="vertical-divider">
+                            <div className="vs-badge">VS</div>
+                        </div>
+
+                        {/* Device 2 Column */}
+                        <div className="device-column">
+                            <div className="column-header">
+                                <h3>{d2.name}</h3>
+                                <div className="device-image-placeholder">
+                                    <img src={d2.image || 'https://via.placeholder.com/150'} alt={d2.name} />
+                                </div>
+                            </div>
+
+                            <div className="pros-cons-section">
+                                <div className="section-block advantages">
+                                    <h4>Advantages</h4>
+                                    {insights.filter(i => i.winner === d2.name).length > 0 ? (
+                                        <ul>
+                                            {insights.filter(i => i.winner === d2.name).map((insight, idx) => (
+                                                <li key={idx}>
+                                                    <span className="icon">{insight.icon}</span>
+                                                    <span className="text">{insight.text}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="empty-text">No clear advantages in analyzed specs.</p>
+                                    )}
+                                </div>
+
+                                <div className="section-block disadvantages">
+                                    <h4>Disadvantages</h4>
+                                    {insights.filter(i => i.winner === d1.name).length > 0 ? (
+                                        <ul>
+                                            {insights.filter(i => i.winner === d1.name).map((insight, idx) => (
+                                                <li key={idx}>
+                                                    <span className="icon">⚠️</span>
+                                                    <span className="text">Lacks {insight.category} advantage held by {d1.name}.</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="empty-text">No clear disadvantages in analyzed specs.</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="insight-section">
-                        {insights.map((insight, index) => (
-                            <div key={index} className={`insight-card ${insight.winner === d1.name ? 'winner-a' : 'winner-b'}`}>
-                                <div className="winner-badge badge-blue">
-                                    {insight.icon} {insight.category} Winner: {insight.winner}
-                                </div>
-                                <div className="insight-text">
-                                    {insight.text.split(insight.winner).map((part, i, arr) => (
-                                        <React.Fragment key={i}>
-                                            {part}
-                                            {i < arr.length - 1 && <span className="highlight">{insight.winner}</span>}
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-
-                        {insights.length === 0 && (
-                            <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
-                                No significant specification differences found to analyze automatically.
-                            </div>
-                        )}
-                    </div>
+                    {insights.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
+                            No significant specification differences found to analyze automatically.
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
