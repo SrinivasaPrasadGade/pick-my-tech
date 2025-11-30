@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaMicrochip, FaThermometerHalf, FaCamera, FaBatteryBolt, FaTimes, FaBolt } from 'react-icons/fa6';
+import { FaMicrochip, FaThermometerHalf, FaCamera, FaBatteryFull, FaTimes, FaBolt } from 'react-icons/fa';
 import './AdvancedSpecsModal.css';
 
 const AdvancedSpecsModal = ({ isOpen, onClose, deviceName }) => {
@@ -165,7 +165,7 @@ const AdvancedSpecsModal = ({ isOpen, onClose, deviceName }) => {
 
                     {/* Endurance */}
                     <div className="spec-card">
-                        <h3><FaBatteryBolt /> Endurance Rating</h3>
+                        <h3><FaBatteryFull /> Endurance Rating</h3>
                         <div style={{ textAlign: 'center', padding: '20px 0' }}>
                             <span className="big-stat">118<span className="stat-unit">h</span></span>
                             <p style={{ color: '#888', fontSize: '0.9rem' }}>Mixed Usage</p>
