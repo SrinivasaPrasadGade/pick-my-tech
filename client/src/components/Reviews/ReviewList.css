@@ -21,19 +21,23 @@
     display: grid;
     gap: 2rem;
     margin-top: 1.5rem;
+    /* Fluid grid layout */
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 }
 
 .review-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
     padding: 2rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .review-card::before {
@@ -43,14 +47,14 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
 }
 
 .review-card:hover {
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.08);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-6px) scale(1.01);
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .review-header {
@@ -67,12 +71,17 @@
 }
 
 .reviewer-avatar {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover .reviewer-avatar {
+    transform: scale(1.05);
 }
 
 .reviewer-details {
@@ -95,12 +104,13 @@
 }
 
 .review-rating {
-    background: rgba(0, 0, 0, 0.03);
+    background: rgba(255, 255, 255, 0.5);
     padding: 0.5rem 0.8rem;
     border-radius: 12px;
     display: flex;
     gap: 0.2rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
 .review-content {
@@ -109,24 +119,27 @@
     font-size: 1.05rem;
     margin-bottom: 2rem;
     font-weight: 400;
+    flex-grow: 1;
 }
 
 /* AI Analysis Section */
 .sentiment-analysis {
-    background: linear-gradient(145deg, #f5f5f7 0%, #ffffff 100%);
+    background: linear-gradient(145deg, rgba(245, 245, 247, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
     border-radius: 16px;
     padding: 1.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     position: relative;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    margin-top: auto;
+    /* Push to bottom */
 }
 
 .sentiment-header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -146,32 +159,33 @@
 .sentiment-badge {
     padding: 0.4rem 1rem;
     border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: #fff;
     margin-left: auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .pros-cons-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .pros-column h5,
 .cons-column h5 {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-    font-weight: 600;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #1d1d1f;
+    letter-spacing: 0.5px;
+    color: #424245;
 }
 
 .text-success {
@@ -192,11 +206,12 @@
 .pros-column li,
 .cons-column li {
     position: relative;
-    padding-left: 1.8rem;
-    margin-bottom: 0.8rem;
-    color: #424245;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    padding-left: 1.5rem;
+    margin-bottom: 0.6rem;
+    color: #1d1d1f;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 500;
 }
 
 .pros-column li::before {
@@ -205,15 +220,15 @@
     left: 0;
     top: 0;
     color: #34c759;
-    font-weight: bold;
-    background: rgba(52, 199, 89, 0.1);
-    width: 20px;
-    height: 20px;
+    font-weight: 800;
+    background: rgba(52, 199, 89, 0.15);
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
 }
 
 .cons-column li::before {
@@ -222,15 +237,15 @@
     left: 0;
     top: 0;
     color: #ff3b30;
-    font-weight: bold;
-    background: rgba(255, 59, 48, 0.1);
-    width: 20px;
-    height: 20px;
+    font-weight: 800;
+    background: rgba(255, 59, 48, 0.15);
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
 }
 
 .pagination {
@@ -244,20 +259,21 @@
 }
 
 .pagination button {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(0, 0, 0, 0.1);
     color: #1d1d1f;
     padding: 0.8rem 1.5rem;
     border-radius: 12px;
     transition: all 0.2s;
-    font-weight: 500;
+    font-weight: 600;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(5px);
 }
 
 .pagination button:not(:disabled):hover {
-    background: #f5f5f7;
+    background: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .pagination button:disabled {
@@ -269,12 +285,17 @@
 .pagination span {
     color: #86868b;
     font-size: 0.9rem;
+    font-weight: 500;
 }
 
 @media (max-width: 768px) {
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+
     .pros-cons-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
     .review-card {
