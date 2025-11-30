@@ -10,7 +10,7 @@ import {
     Area,
     AreaChart
 } from 'recharts';
-import { FaTimes, FaTrendingDown, FaTrendingUp, FaBell } from 'react-icons/fa';
+import { FaTimes, FaArrowDown, FaArrowUp, FaBell } from 'react-icons/fa';
 import './PriceHistoryModal.css';
 
 const PriceHistoryModal = ({ isOpen, onClose, currentPrice, deviceName }) => {
@@ -74,7 +74,7 @@ const PriceHistoryModal = ({ isOpen, onClose, currentPrice, deviceName }) => {
                     <div className="summary-card trend">
                         <span className="label">Trend</span>
                         <span className={`value ${isPriceDrop ? 'down' : 'up'}`}>
-                            {isPriceDrop ? <FaTrendingDown /> : <FaTrendingUp />}
+                            {isPriceDrop ? <FaArrowDown /> : <FaArrowUp />}
                             {isPriceDrop ? ' Dropping' : ' Rising'}
                         </span>
                     </div>
