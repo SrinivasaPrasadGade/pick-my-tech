@@ -47,7 +47,7 @@ const ReviewList = ({ deviceId, refreshTrigger }) => {
                             <div className="review-header">
                                 <div className="reviewer-info">
                                     <img
-                                        src={review.user?.image || 'https://via.placeholder.com/40'}
+                                        src={review.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.user?.name || 'Anonymous')}&background=random`}
                                         alt={review.user?.name || 'User'}
                                         className="reviewer-avatar"
                                     />

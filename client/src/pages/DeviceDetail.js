@@ -335,6 +335,7 @@ const DeviceDetail = () => {
                   isOpen={showAdvancedSpecs}
                   onClose={() => setShowAdvancedSpecs(false)}
                   deviceName={device.name}
+                  category={category}
                 />
               </div>
             )}
