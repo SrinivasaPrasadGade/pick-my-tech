@@ -214,33 +214,55 @@ const getChatbotResponse = async (message, userId) => {
   // 8. LLM Fallback (Hugging Face)
   try {
     if (process.env.HUGGINGFACE_API_KEY && !process.env.HUGGINGFACE_API_KEY.includes('PLACEHOLDER')) {
-      const response = await axios.post(
-        'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
-        {
-          inputs: `<s>[INST] You are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully. Question: ${message} [/INST]`,
-          parameters: {
-            max_new_tokens: 200,
-            temperature: 0.7,
-            return_full_text: false
-          }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
 
-      if (response.data && response.data[0] && response.data[0].generated_text) {
+      const queryHF = async (retryCount = 0) => {
+        try {
+          const response = await axios.post(
+            'https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct',
+            {
+              inputs: `<|user|>\nYou are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully.\nQuestion: ${message}<|end|>\n<|assistant|>\n`,
+              parameters: {
+                max_new_tokens: 200,
+                temperature: 0.7,
+                return_full_text: false
+              }
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+          return response.data;
+        } catch (err) {
+          // Handle Model Loading (503)
+          if (err.response && err.response.status === 503 && err.response.data && err.response.data.error && err.response.data.error.includes('loading')) {
+            if (retryCount < 3) {
+              const waitTime = (err.response.data.estimated_time || 5) * 1000;
+              console.log(`Model loading, waiting ${waitTime}ms...`);
+              await new Promise(resolve => setTimeout(resolve, waitTime));
+              return queryHF(retryCount + 1);
+            }
+          }
+          throw err;
+        }
+      };
+
+      const data = await queryHF();
+
+      if (data && data[0] && data[0].generated_text) {
         return {
-          response: response.data[0].generated_text.trim(),
+          response: data[0].generated_text.trim(),
           suggestions: ['Ask another question', 'Find devices', 'Home']
         };
       }
     }
   } catch (error) {
     console.error('LLM Error:', error.message);
+    if (error.response) {
+      console.error('LLM Response Data:', error.response.data);
+    }
     // Fall through to default response
   }
 
