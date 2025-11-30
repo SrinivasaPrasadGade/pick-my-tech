@@ -25,12 +25,52 @@ const getChatbotResponse = async (message, userId) => {
   // 2. Website Information
   if (lowerMessage.includes('what is this website') || lowerMessage.includes('about this app') || lowerMessage.includes('who are you')) {
     return {
-      response: "I'm Maverick, your AI assistant for PickMyTech! 🚀\n\nThis platform helps you:\n- Find the best gadgets based on your needs\n- Compare devices side-by-side\n- Read the latest tech news\n- Join community discussions\n\nHow can I help you today?",
+      response: "I'm Maverick, your AI assistant for PickMyTech! 🚀\n\nThis platform helps you:\n- **Find the best gadgets** based on your needs\n- **Compare devices** side-by-side\n- **Read the latest tech news**\n- **Join community discussions**\n\nHow can I help you today?",
       suggestions: ['Find a phone', 'Latest news', 'Compare devices']
     };
   }
 
-  // 3. Smart Device Search (Category + Budget + Brand)
+  // 3. Specific Device Details (Enhanced)
+  if (lowerMessage.includes('specs of') || lowerMessage.includes('details of') || lowerMessage.includes('tell me about') || lowerMessage.includes('price of')) {
+    // Extract potential device name
+    const searchTerms = lowerMessage.replace('specs of', '').replace('details of', '').replace('tell me about', '').replace('price of', '').trim();
+
+    if (searchTerms.length > 2) {
+      try {
+        // Try to find a matching device
+        const device = await Device.findOne({
+          $or: [
+            { name: { $regex: searchTerms, $options: 'i' } },
+            { model: { $regex: searchTerms, $options: 'i' } }
+          ]
+        });
+
+        if (device) {
+          const specs = device.specifications;
+          const price = device.prices && device.prices.length > 0 ? device.prices[0].price : 'N/A';
+
+          let responseText = `Here are the details for **${device.name}**:\n\n`;
+          responseText += `- **Price**: ₹${price}\n`;
+          if (specs.processor?.name) responseText += `- **Processor**: ${specs.processor.name}\n`;
+          if (specs.memory?.ram) responseText += `- **RAM**: ${specs.memory.ram}\n`;
+          if (specs.memory?.storage) responseText += `- **Storage**: ${specs.memory.storage}\n`;
+          if (specs.display?.size) responseText += `- **Display**: ${specs.display.size} ${specs.display.type}\n`;
+          if (specs.battery?.capacity) responseText += `- **Battery**: ${specs.battery.capacity}\n`;
+
+          return {
+            action: 'navigate',
+            path: `/devices/${device._id}`,
+            response: responseText + "\nWould you like to see the full details?",
+            suggestions: ['Yes, show full details', 'Compare this device', 'Find other phones']
+          };
+        }
+      } catch (err) {
+        console.error("Device search error:", err);
+      }
+    }
+  }
+
+  // 4. Smart Device Search (Category + Budget + Brand)
   if (lowerMessage.includes('find') || lowerMessage.includes('show') || lowerMessage.includes('search') || lowerMessage.includes('looking for') || lowerMessage.includes('recommend') || lowerMessage.includes('buy')) {
     let category = '';
     if (lowerMessage.includes('phone') || lowerMessage.includes('mobile')) category = 'mobile';
@@ -44,7 +84,7 @@ const getChatbotResponse = async (message, userId) => {
     const budget = budgetMatch ? parseInt(budgetMatch[1]) : null;
 
     // Extract brand if present
-    const brands = ['apple', 'samsung', 'dell', 'hp', 'lenovo', 'asus', 'xiaomi', 'oneplus', 'google', 'sony'];
+    const brands = ['apple', 'samsung', 'dell', 'hp', 'lenovo', 'asus', 'xiaomi', 'oneplus', 'google', 'sony', 'nothing', 'realme', 'vivo', 'oppo'];
     const brand = brands.find(b => lowerMessage.includes(b));
 
     let queryParams = new URLSearchParams();
@@ -64,17 +104,6 @@ const getChatbotResponse = async (message, userId) => {
       action: 'navigate',
       path: `/devices?${queryParams.toString()}`,
       response: `Here are some ${brand || ''} ${category || 'devices'} ${budget ? 'under ₹' + budget : ''} for you!`
-    };
-  }
-
-  // 4. Specific Device Details
-  if (lowerMessage.includes('specs') || lowerMessage.includes('details') || lowerMessage.includes('price of')) {
-    // This would ideally require a search to get the ID, for now redirect to search
-    return {
-      action: 'navigate',
-      path: '/devices',
-      response: "Please search for the device in the devices section to see full details.",
-      suggestions: ['Go to Devices']
     };
   }
 
@@ -129,7 +158,20 @@ const getChatbotResponse = async (message, userId) => {
         messages: [
           {
             role: "system",
-            content: "You are Maverick, a helpful tech assistant for PickMyTech. Answer concisely and helpfully."
+            content: `You are Maverick, a helpful tech assistant for PickMyTech. 
+            
+            Your capabilities:
+            1. Help users find devices (phones, laptops, etc.).
+            2. Explain technical specifications.
+            3. Guide users to sections: 
+               - /devices (Browse)
+               - /compare (Compare)
+               - /news (Tech News)
+               - /community (Discussions)
+               - /recommendations (AI Help)
+            
+            Keep answers concise, friendly, and use markdown for formatting (bold, lists).
+            If a user asks for specific device details you don't know, suggest they search for it.`
           },
           {
             role: "user",
@@ -138,7 +180,7 @@ const getChatbotResponse = async (message, userId) => {
         ],
         model: "llama3-8b-8192",
         temperature: 0.7,
-        max_tokens: 200,
+        max_tokens: 300,
       });
 
       const text = completion.choices[0]?.message?.content;

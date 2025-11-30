@@ -150,19 +150,36 @@ const Chatbot = () => {
     { text: 'Tech news', action: 'Show tech news' }
   ];
 
-  // Helper to render text with newlines and bold
+  // Helper to render text with newlines, bold, and bullet points
   const renderText = (text) => {
-    return text.split('\n').map((line, i) => (
-      <React.Fragment key={i}>
-        {line.split(/(\*\*.*?\*\*)/).map((part, j) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={j}>{part.slice(2, -2)}</strong>;
-          }
-          return part;
-        })}
-        <br />
-      </React.Fragment>
-    ));
+    return text.split('\n').map((line, i) => {
+      // Handle bullet points
+      const isBullet = line.trim().startsWith('- ');
+      const content = isBullet ? line.trim().substring(2) : line;
+
+      const formattedContent = content.split(/(\*\*.*?\*\*)/).map((part, j) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={j}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      });
+
+      if (isBullet) {
+        return (
+          <div key={i} className="message-bullet">
+            <span className="bullet-point">•</span>
+            <span>{formattedContent}</span>
+          </div>
+        );
+      }
+
+      return (
+        <React.Fragment key={i}>
+          {formattedContent}
+          <br />
+        </React.Fragment>
+      );
+    });
   };
 
   return (
