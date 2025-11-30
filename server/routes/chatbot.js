@@ -6,6 +6,8 @@ const News = require('../models/News');
 const Community = require('../models/Community');
 
 // Enhanced rule-based chatbot
+const axios = require('axios');
+
 // Enhanced rule-based chatbot
 const getChatbotResponse = async (message, userId) => {
   const lowerMessage = message.toLowerCase().trim();
@@ -180,9 +182,6 @@ const getChatbotResponse = async (message, userId) => {
       maxPrice = parseInt(priceMatch[1]);
     }
 
-    // If no category detected but brand is present, try to infer or default to mobile if ambiguous (or just search all)
-    // For now, if no category, we default to empty string which means "All Categories" in frontend filter
-
     let responseText = `I've set up a search for you`;
     if (category) responseText += ` for **${category}s**`;
     if (brand) responseText += ` by **${brand}**`;
@@ -210,6 +209,39 @@ const getChatbotResponse = async (message, userId) => {
       response: "You're welcome! Happy to help. 😊",
       suggestions: ['Find more devices', 'Home']
     };
+  }
+
+  // 8. LLM Fallback (Hugging Face)
+  try {
+    if (process.env.HUGGINGFACE_API_KEY && !process.env.HUGGINGFACE_API_KEY.includes('PLACEHOLDER')) {
+      const response = await axios.post(
+        'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+        {
+          inputs: `<s>[INST] You are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully. Question: ${message} [/INST]`,
+          parameters: {
+            max_new_tokens: 200,
+            temperature: 0.7,
+            return_full_text: false
+          }
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data && response.data[0] && response.data[0].generated_text) {
+        return {
+          response: response.data[0].generated_text.trim(),
+          suggestions: ['Ask another question', 'Find devices', 'Home']
+        };
+      }
+    }
+  } catch (error) {
+    console.error('LLM Error:', error.message);
+    // Fall through to default response
   }
 
   // Default Fallback
