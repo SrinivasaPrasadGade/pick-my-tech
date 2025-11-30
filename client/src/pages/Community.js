@@ -4,14 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { FaHeart, FaComment, FaPlus } from 'react-icons/fa';
 import './Community.css';
+import CreatePostModal from '../components/community/CreatePostModal';
 
 const Community = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newPost, setNewPost] = useState({ title: '', content: '', category: 'discussion' });
-
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -37,22 +36,6 @@ const Community = () => {
       fetchPosts();
     } catch (error) {
       console.error('Error liking post:', error);
-    }
-  };
-
-  const handleCreatePost = async (e) => {
-    e.preventDefault();
-    if (!user) {
-      alert('Please login to create posts');
-      return;
-    }
-    try {
-      await axios.post('/api/community', newPost);
-      setShowCreateModal(false);
-      setNewPost({ title: '', content: '', category: 'discussion' });
-      fetchPosts();
-    } catch (error) {
-      console.error('Error creating post:', error);
     }
   };
 
@@ -136,54 +119,11 @@ const Community = () => {
         )}
       </div>
 
-      {showCreateModal && (
-        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Create New Post</h2>
-            <form onSubmit={handleCreatePost}>
-              <div className="form-group">
-                <label>Title</label>
-                <input
-                  type="text"
-                  value={newPost.title}
-                  onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Category</label>
-                <select
-                  value={newPost.category}
-                  onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
-                >
-                  <option value="discussion">Discussion</option>
-                  <option value="review">Review</option>
-                  <option value="question">Question</option>
-                  <option value="experience">Experience</option>
-                  <option value="tip">Tip</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Content</label>
-                <textarea
-                  value={newPost.content}
-                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                  required
-                  rows={6}
-                />
-              </div>
-              <div className="modal-actions">
-                <button type="button" onClick={() => setShowCreateModal(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Post
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <CreatePostModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onPostCreated={fetchPosts}
+      />
     </div>
   );
 };
