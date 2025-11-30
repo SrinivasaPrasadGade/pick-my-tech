@@ -27,6 +27,8 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   line-height: 1.5;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 code {
@@ -46,7 +48,9 @@ button {
   font-family: inherit;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   font-family: inherit;
   outline: none;
 }

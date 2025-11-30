@@ -13,6 +13,26 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  width: 100%;
+}
+
+/* Responsive Typography & Layout */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
 }
 
 /* Buttons */
@@ -128,8 +148,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Grid */
@@ -150,16 +175,26 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
+@media (max-width: 480px) {
+
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .section-title {
     font-size: 36px;
   }
-  
+
   .section-subtitle {
     font-size: 18px;
   }
-  
+
   .container {
     padding: 0 16px;
   }

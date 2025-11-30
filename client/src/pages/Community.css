@@ -319,6 +319,28 @@
   .posts-grid {
     grid-template-columns: 1fr;
   }
+
+  .glass-modal {
+    width: 95%;
+    padding: 24px;
+    max-height: 85vh;
+  }
+
+  .modal-header h2 {
+    font-size: 24px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    /* Stack buttons, cancel at bottom */
+    gap: 12px;
+  }
+
+  .btn-ghost,
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Post Detail Styles */

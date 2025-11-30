@@ -283,6 +283,61 @@
   }
 }
 
+@media (max-width: 480px) {
+  .device-detail-page {
+    padding: 24px 0;
+  }
+
+  .device-info-main h1 {
+    font-size: 32px;
+  }
+
+  .device-rating-main {
+    flex-wrap: wrap;
+  }
+
+  .price-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .price-amount {
+    font-size: 24px;
+  }
+
+  .device-actions {
+    flex-direction: column;
+  }
+
+  .device-actions button {
+    width: 100%;
+  }
+
+  .specs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .spec-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .spec-value {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .features-list {
+    gap: 8px;
+  }
+
+  .feature-tag {
+    font-size: 13px;
+  }
+}
+
 
 /* Popup Styles */
 .info-icon-wrapper {

@@ -124,11 +124,23 @@
 
 @media (max-width: 480px) {
   .auth-container {
-    padding: 32px 24px;
+    padding: 32px 20px;
+    box-shadow: none;
+    /* Remove shadow on mobile for cleaner look if full width, or keep it. Let's keep it but subtle. */
+    background: white;
+  }
+
+  .auth-page {
+    padding: 20px 16px;
+    align-items: flex-start;
+    /* Top align on mobile */
   }
 
   .social-auth {
     grid-template-columns: 1fr;
   }
-}
 
+  .auth-header h1 {
+    font-size: 28px;
+  }
+}

@@ -306,6 +306,12 @@
     flex-direction: column;
     padding: 80px 20px;
     text-align: center;
+    gap: 40px;
+  }
+
+  .hero-content {
+    order: 2;
+    /* Image first on mobile? Or text first? Let's keep text first for SEO/Context, but maybe image is better for visual. Let's stick to default order but column. */
   }
 
   .hero-title {
@@ -313,8 +319,10 @@
   }
 
   .hero-image-placeholder {
-    width: 300px;
-    height: 300px;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .section-title {
@@ -326,3 +334,37 @@
   }
 }
 
+@media (max-width: 480px) {
+  .hero {
+    padding: 40px 16px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .btn-large {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .categories-grid,
+  .devices-grid,
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .category-card {
+    padding: 24px;
+  }
+}
