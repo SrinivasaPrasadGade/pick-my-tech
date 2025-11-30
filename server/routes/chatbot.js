@@ -219,7 +219,7 @@ const getChatbotResponse = async (message, userId) => {
       const queryHF = async (retryCount = 0) => {
         try {
           const response = await axios.post(
-            'https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct',
+            'https://router.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct',
             {
               inputs: `<|user|>\nYou are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully.\nQuestion: ${message}<|end|>\n<|assistant|>\n`,
               parameters: {
