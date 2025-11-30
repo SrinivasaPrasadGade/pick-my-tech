@@ -124,7 +124,7 @@ const getChatbotResponse = async (message, userId) => {
   try {
     if (process.env.GEMINI_API_KEY) {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
       const prompt = `You are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully.\n\nQuestion: ${message}`;
 
