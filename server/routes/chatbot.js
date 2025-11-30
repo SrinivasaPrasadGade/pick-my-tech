@@ -212,9 +212,10 @@ const getChatbotResponse = async (message, userId) => {
   }
 
   // 8. LLM Fallback (Hugging Face)
+  console.log('Attempting LLM Fallback...');
   try {
     if (process.env.HUGGINGFACE_API_KEY && !process.env.HUGGINGFACE_API_KEY.includes('PLACEHOLDER')) {
-
+      console.log('HUGGINGFACE_API_KEY is valid, calling LLM...');
       const queryHF = async (retryCount = 0) => {
         try {
           const response = await axios.post(
