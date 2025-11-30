@@ -47,7 +47,7 @@ const CommunityPostDetail = () => {
             return;
         }
         try {
-            await axios.post(`/api/community/${id}/comment`, { content: newComment });
+            await axios.post(`/api/community/${id}/comments`, { content: newComment });
             setNewComment('');
             fetchPost();
         } catch (error) {
