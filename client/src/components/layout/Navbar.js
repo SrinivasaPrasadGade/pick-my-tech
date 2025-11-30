@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaBars, FaTimes, FaUser, FaSearch } from 'react-icons/fa';
 import './Navbar.css';
@@ -7,16 +7,10 @@ import './Navbar.css';
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/devices?search=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery('');
-    }
-  };
+  const isActive = (path) => location.pathname === path ? 'active' : '';
 
   return (
     <nav className="navbar">
@@ -25,51 +19,36 @@ const Navbar = () => {
           <span className="logo-text">PickMyTech</span>
         </Link>
 
-        <div className="navbar-search">
-          <form onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="Search devices..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            <button type="submit" className="search-btn">
-              <FaSearch />
-            </button>
-          </form>
-        </div>
-
         <ul className={`navbar-menu ${mobileMenuOpen ? 'active' : ''}`}>
           <li>
-            <Link to="/devices" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/devices" className={isActive('/devices')} onClick={() => setMobileMenuOpen(false)}>
               Devices
             </Link>
           </li>
           <li>
-            <Link to="/news" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/news" className={isActive('/news')} onClick={() => setMobileMenuOpen(false)}>
               Tech News
             </Link>
           </li>
           <li>
-            <Link to="/community" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/community" className={isActive('/community')} onClick={() => setMobileMenuOpen(false)}>
               Community
             </Link>
           </li>
           <li>
-            <Link to="/compare" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/compare" className={isActive('/compare')} onClick={() => setMobileMenuOpen(false)}>
               Compare
             </Link>
           </li>
           {user ? (
             <>
               <li>
-                <Link to="/recommendations" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/recommendations" className={isActive('/recommendations')} onClick={() => setMobileMenuOpen(false)}>
                   Recommendations
                 </Link>
               </li>
               <li>
-                <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/profile" className={isActive('/profile')} onClick={() => setMobileMenuOpen(false)}>
                   <FaUser /> {user.name}
                 </Link>
               </li>
@@ -82,7 +61,7 @@ const Navbar = () => {
           ) : (
             <>
               <li>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/login" className={isActive('/login')} onClick={() => setMobileMenuOpen(false)}>
                   Login
                 </Link>
               </li>

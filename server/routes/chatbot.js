@@ -6,14 +6,59 @@ const News = require('../models/News');
 const Community = require('../models/Community');
 
 // Enhanced rule-based chatbot
+// Enhanced rule-based chatbot
 const getChatbotResponse = async (message, userId) => {
   const lowerMessage = message.toLowerCase().trim();
 
   // 1. Navigation & Help
   if (lowerMessage.includes('help') || lowerMessage === '?' || lowerMessage === 'menu') {
     return {
-      response: "I'm Maverick, your AI tech assistant! 🤖\n\nI can help you with:\n📱 **Finding Devices**: 'Show me gaming phones under $800'\n🆚 **Comparisons**: 'Compare iPhone 15 and Samsung S24'\n📰 **Tech News**: 'Latest tech news'\n⭐ **Recommendations**: 'Suggest a laptop for coding'\n🔍 **Specific Details**: 'Tell me about Pixel 8 Pro'\n\nWhat's on your mind?",
-      suggestions: ['Find gaming phones', 'Compare devices', 'Latest news', 'Suggest a laptop']
+      response: "I'm Maverick, your AI tech assistant! 🤖\n\nI can help you with:\n📱 **Finding Devices**: 'Find me a phone'\n🆚 **Comparisons**: 'Compare iPhone 15 and Samsung S24'\n📰 **Tech News**: 'Latest tech news'\n⭐ **Recommendations**: 'Suggest a laptop for coding'\n🔍 **Specific Details**: 'Tell me about Pixel 8 Pro'\n\nWhat's on your mind?",
+      suggestions: ['Find a phone', 'Compare devices', 'Latest news', 'Suggest a laptop']
+    };
+  }
+
+  // Navigation commands
+  if (lowerMessage.includes('go to') || lowerMessage.includes('navigate to') || lowerMessage.includes('open')) {
+    if (lowerMessage.includes('compare')) {
+      return {
+        response: "Navigating to the Compare page...",
+        action: 'navigate',
+        data: { path: '/compare' },
+        suggestions: ['Find devices', 'Home']
+      };
+    }
+    if (lowerMessage.includes('news')) {
+      return {
+        response: "Taking you to Tech News...",
+        action: 'navigate',
+        data: { path: '/news' },
+        suggestions: ['Home', 'Find devices']
+      };
+    }
+    if (lowerMessage.includes('community') || lowerMessage.includes('forum')) {
+      return {
+        response: "Opening Community section...",
+        action: 'navigate',
+        data: { path: '/community' },
+        suggestions: ['Home', 'Write a post']
+      };
+    }
+    if (lowerMessage.includes('recommend')) {
+      return {
+        response: "Going to Recommendations...",
+        action: 'navigate',
+        data: { path: '/recommendations' },
+        suggestions: ['Home', 'Find devices']
+      };
+    }
+  }
+
+  // Website Info
+  if (lowerMessage.includes('what is this website') || lowerMessage.includes('about this app') || lowerMessage.includes('who are you')) {
+    return {
+      response: "I'm Maverick, and this is **PickMyTech**! 🚀\n\nWe help you find the perfect tech gadgets. You can:\n- **Browse & Filter** devices by specs and price.\n- **Compare** up to 3 devices side-by-side.\n- **Get Recommendations** based on your needs.\n- **Read Tech News** and join our **Community** discussions.",
+      suggestions: ['Find a phone', 'Compare devices', 'Latest news']
     };
   }
 
@@ -23,8 +68,6 @@ const getChatbotResponse = async (message, userId) => {
     const parts = lowerMessage.split(/compare|vs|versus|and/i).filter(p => p.trim().length > 2);
 
     if (parts.length >= 2) {
-      // This is a placeholder for a more complex extraction, simplified for now
-      // In a real app, we'd use NLP or more robust regex
       return {
         response: "I can help you compare those! To see a detailed side-by-side comparison of specifications, features, and pricing, please use our dedicated Comparison tool.",
         action: 'navigate',
@@ -109,8 +152,8 @@ const getChatbotResponse = async (message, userId) => {
   }
 
   // 6. Smart Device Search (Category + Budget + Brand)
-  if (lowerMessage.includes('find') || lowerMessage.includes('show') || lowerMessage.includes('search') || lowerMessage.includes('looking for') || lowerMessage.includes('recommend')) {
-    let category = 'mobile';
+  if (lowerMessage.includes('find') || lowerMessage.includes('show') || lowerMessage.includes('search') || lowerMessage.includes('looking for') || lowerMessage.includes('recommend') || lowerMessage.includes('buy')) {
+    let category = '';
     let brand = null;
     let maxPrice = null;
 
@@ -120,6 +163,7 @@ const getChatbotResponse = async (message, userId) => {
     else if (lowerMessage.match(/watch|smartwatch/)) category = 'smartwatch';
     else if (lowerMessage.match(/headphone|earbud|airpod/)) category = 'headphones';
     else if (lowerMessage.match(/camera|dslr/)) category = 'camera';
+    else if (lowerMessage.match(/phone|mobile|iphone|android/)) category = 'mobile';
 
     // Detect Brand
     const brands = ['apple', 'samsung', 'google', 'dell', 'hp', 'lenovo', 'asus', 'sony', 'nothing', 'xiaomi', 'oneplus'];
@@ -136,7 +180,11 @@ const getChatbotResponse = async (message, userId) => {
       maxPrice = parseInt(priceMatch[1]);
     }
 
-    let responseText = `I've set up a search for **${category}s**`;
+    // If no category detected but brand is present, try to infer or default to mobile if ambiguous (or just search all)
+    // For now, if no category, we default to empty string which means "All Categories" in frontend filter
+
+    let responseText = `I've set up a search for you`;
+    if (category) responseText += ` for **${category}s**`;
     if (brand) responseText += ` by **${brand}**`;
     if (maxPrice) responseText += ` under **$${maxPrice}**`;
     responseText += ". Here's what I found!";
@@ -145,7 +193,7 @@ const getChatbotResponse = async (message, userId) => {
       response: responseText,
       action: 'search',
       data: { category, brand, maxPrice },
-      suggestions: [`Show ${category}s`, 'Refine search', 'Home']
+      suggestions: [`Show ${category || 'devices'}`, 'Refine search', 'Home']
     };
   }
 

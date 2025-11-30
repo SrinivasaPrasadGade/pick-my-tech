@@ -74,108 +74,106 @@ const Devices = () => {
           <p>Find the perfect device for your needs</p>
         </div>
 
-        {showFilters && (
-          <div className="filters-panel">
-            <div className="search-bar-full">
-              <FaSearch />
+        <div className={`filters-panel ${showFilters ? 'open' : 'closed'}`}>
+          <div className="search-bar-full">
+            <FaSearch />
+            <input
+              type="text"
+              placeholder="Search devices..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
+            />
+          </div>
+          <div className="filter-group">
+            <label>Category</label>
+            <select
+              value={filters.category}
+              onChange={(e) => handleFilterChange('category', e.target.value)}
+            >
+              <option value="">All Categories</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Brand</label>
+            <select
+              value={filters.brand}
+              onChange={(e) => handleFilterChange('brand', e.target.value)}
+            >
+              <option value="">All Brands</option>
+              {brands.map(brand => (
+                <option key={brand} value={brand}>{brand}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Price Range</label>
+            <div className="price-range">
               <input
-                type="text"
-                placeholder="Search devices..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
+                type="number"
+                placeholder="Min"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+              />
+              <span>-</span>
+              <input
+                type="number"
+                placeholder="Max"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
               />
             </div>
-            <div className="filter-group">
-              <label>Category</label>
-              <select
-                value={filters.category}
-                onChange={(e) => handleFilterChange('category', e.target.value)}
-              >
-                <option value="">All Categories</option>
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-                ))}
-              </select>
-            </div>
+          </div>
 
-            <div className="filter-group">
-              <label>Brand</label>
-              <select
-                value={filters.brand}
-                onChange={(e) => handleFilterChange('brand', e.target.value)}
-              >
-                <option value="">All Brands</option>
-                {brands.map(brand => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="filter-group">
-              <label>Price Range</label>
-              <div className="price-range">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={filters.minPrice}
-                  onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                />
-                <span>-</span>
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={filters.maxPrice}
-                  onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="filter-group">
-              <label>Sort By</label>
-              <select
-                value={`${filters.sort}-${filters.order}`}
-                onChange={(e) => {
-                  const [sort, order] = e.target.value.split('-');
-                  handleFilterChange('sort', sort);
-                  handleFilterChange('order', order);
-                }}
-              >
-                <option value="createdAt-desc">Newest First</option>
-                <option value="createdAt-asc">Oldest First</option>
-                <option value="averageRating-desc">Highest Rated</option>
-                <option value="name-asc">Name A-Z</option>
-                <option value="name-desc">Name Z-A</option>
-              </select>
-            </div>
-
-            <div className="filter-group">
-              <label style={{ visibility: 'hidden' }}>Clear</label>
-              <button
-                className="btn-clear"
-                onClick={() => {
-                  setFilters({
-                    category: '',
-                    brand: '',
-                    search: '',
-                    minPrice: '',
-                    maxPrice: '',
-                    sort: 'createdAt',
-                    order: 'desc'
-                  });
-                  setSearchParams({});
-                }}
-              >
-                Clear Filters
-              </button>
-            </div>
-            <button
-              className="btn-filter-toggle"
-              onClick={() => setShowFilters(false)}
+          <div className="filter-group">
+            <label>Sort By</label>
+            <select
+              value={`${filters.sort}-${filters.order}`}
+              onChange={(e) => {
+                const [sort, order] = e.target.value.split('-');
+                handleFilterChange('sort', sort);
+                handleFilterChange('order', order);
+              }}
             >
-              <FaFilter /> Hide Filters
+              <option value="createdAt-desc">Newest First</option>
+              <option value="createdAt-asc">Oldest First</option>
+              <option value="averageRating-desc">Highest Rated</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label style={{ visibility: 'hidden' }}>Clear</label>
+            <button
+              className="btn-clear"
+              onClick={() => {
+                setFilters({
+                  category: '',
+                  brand: '',
+                  search: '',
+                  minPrice: '',
+                  maxPrice: '',
+                  sort: 'createdAt',
+                  order: 'desc'
+                });
+                setSearchParams({});
+              }}
+            >
+              Clear Filters
             </button>
           </div>
-        )}
+          <button
+            className="btn-filter-toggle"
+            onClick={() => setShowFilters(false)}
+          >
+            <FaFilter /> Hide Filters
+          </button>
+        </div>
 
         {!showFilters && (
           <button

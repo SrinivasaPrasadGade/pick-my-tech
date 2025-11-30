@@ -123,6 +123,26 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 24px;
   box-shadow: 0 2px 8px var(--shadow);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  opacity: 1;
+  max-height: 1000px;
+  /* Large enough to fit content */
+}
+
+.filters-panel.closed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 24px;
+  margin-bottom: 0;
+  pointer-events: none;
+}
+
+.filters-panel.open {
+  max-height: 1000px;
+  opacity: 1;
+  padding: 24px;
+  margin-bottom: 32px;
 }
 
 .filter-group {

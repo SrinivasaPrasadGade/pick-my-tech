@@ -20,7 +20,14 @@ const Compare = () => {
             }
 
             try {
-                const res = await axios.get(`/api/devices?search=${encodeURIComponent(searchQuery)}`);
+                let url = `/api/devices?search=${encodeURIComponent(searchQuery)}`;
+
+                // If the first device is selected, filter subsequent searches by its category
+                if (selectedDevices[0] && selectedDevices[0].category) {
+                    url += `&category=${encodeURIComponent(selectedDevices[0].category)}`;
+                }
+
+                const res = await axios.get(url);
                 setSearchResults(res.data.devices.slice(0, 5));
             } catch (error) {
                 console.error('Error searching devices:', error);
