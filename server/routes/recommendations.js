@@ -29,7 +29,7 @@ const calculateScore = (device, userAnswers) => {
 
   // Brand preference (weight: 15%)
   if (userAnswers.preferredBrands && userAnswers.preferredBrands.length > 0) {
-    if (userAnswers.preferredBrands.some(b => 
+    if (userAnswers.preferredBrands.some(b =>
       device.brand.toLowerCase().includes(b.toLowerCase())
     )) {
       score += 15;
@@ -83,7 +83,7 @@ const calculateScore = (device, userAnswers) => {
   // Priorities match (weight: 20%)
   if (userAnswers.priorities && userAnswers.priorities.length > 0) {
     userAnswers.priorities.forEach(priority => {
-      switch(priority) {
+      switch (priority) {
         case 'battery':
           const battery = parseInt(device.specifications?.battery?.capacity) || 0;
           if (battery >= 4000) score += 5;
@@ -149,21 +149,83 @@ router.post('/', protect, async (req, res) => {
 // Get quick recommendations (without auth)
 router.post('/quick', async (req, res) => {
   try {
-    const { deviceType = 'mobile', budgetRange, usageType = [] } = req.body;
-    const devices = await Device.find({ category: deviceType }).limit(20);
+    const { deviceType = 'mobile', budgetRange, usageType = [], priorities = [] } = req.body;
 
-    const mockAnswers = { deviceType, budgetRange, usageType };
-    const scoredDevices = devices.map(device => ({
-      device,
-      score: calculateScore(device, mockAnswers)
-    }));
+    // 1. Filter candidates by hard constraints (Category & Budget)
+    // We still want to respect the category (phone vs laptop) and rough budget
+    let priceQuery = {};
+    if (budgetRange) {
+      const budgetMap = {
+        'under-500': { $lte: 500 },
+        '500-1000': { $gte: 500, $lte: 1000 },
+        '1000-2000': { $gte: 1000, $lte: 2000 },
+        '2000-3000': { $gte: 2000, $lte: 3000 },
+        'above-3000': { $gte: 3000 }
+      };
+      if (budgetMap[budgetRange]) {
+        priceQuery = { 'prices.price': budgetMap[budgetRange] };
+      }
+    }
 
-    scoredDevices.sort((a, b) => b.score - a.score);
+    const devices = await Device.find({
+      category: deviceType,
+      ...priceQuery
+    }).limit(50); // Get a candidate pool
 
-    res.json({
-      success: true,
-      recommendations: scoredDevices.slice(0, 10).map(item => item.device)
-    });
+    if (devices.length === 0) {
+      return res.json({ success: true, recommendations: [] });
+    }
+
+    // 2. Construct User Profile String for ML
+    // "I want a mobile phone for gaming and photography. My priorities are performance and camera."
+    const userProfile = `I want a ${deviceType} for ${usageType.join(' and ')}. My priorities are ${priorities.join(' and ')}.`;
+
+    // 3. Use ML to find best semantic matches
+    try {
+      const mlService = require('../services/mlService');
+
+      const recommendations = await mlService.findTopMatches(
+        userProfile,
+        devices,
+        (device) => {
+          // Construct Device Description String
+          // "Samsung Galaxy S24 Ultra. Snapdragon 8 Gen 3. 200MP Camera. 5000mAh Battery."
+          const specs = device.specifications || {};
+          const processor = specs.processor?.name || '';
+          const camera = specs.camera?.rear || '';
+          const battery = specs.battery?.capacity || '';
+          const description = device.description || '';
+
+          return `${device.name}. ${description}. ${processor}. ${camera}. ${battery}`;
+        }
+      );
+
+      // Return top 10
+      res.json({
+        success: true,
+        recommendations: recommendations.slice(0, 10).map(r => r.item),
+        debug: {
+          userProfile,
+          scores: recommendations.slice(0, 5).map(r => ({ name: r.item.name, score: r.score }))
+        }
+      });
+
+    } catch (mlError) {
+      console.error('ML Service Error, falling back to rule-based:', mlError);
+      // Fallback to original rule-based logic if ML fails
+      const mockAnswers = { deviceType, budgetRange, usageType, priorities };
+      const scoredDevices = devices.map(device => ({
+        device,
+        score: calculateScore(device, mockAnswers)
+      }));
+      scoredDevices.sort((a, b) => b.score - a.score);
+
+      res.json({
+        success: true,
+        recommendations: scoredDevices.slice(0, 10).map(item => item.device)
+      });
+    }
+
   } catch (error) {
     res.status(500).json({
       success: false,
