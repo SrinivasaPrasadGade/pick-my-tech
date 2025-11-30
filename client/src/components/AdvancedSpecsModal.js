@@ -24,8 +24,13 @@ const AdvancedSpecsModal = ({ isOpen, onClose, deviceName }) => {
         <div className="advanced-specs-overlay" onClick={onClose}>
             <div className="advanced-specs-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2><FaMicrochip /> OVERKILL MODE_</h2>
-                    <button className="close-btn" onClick={onClose}><FaTimes /></button>
+                    <div>
+                        <h2>Advanced Specifications</h2>
+                        <p className="device-name-subtitle">{deviceName}</p>
+                    </div>
+                    <button className="close-btn" onClick={onClose}>
+                        <FaTimes />
+                    </button>
                 </div>
 
                 <div className="modal-content">

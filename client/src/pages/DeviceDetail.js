@@ -305,9 +305,9 @@ const DeviceDetail = () => {
                     className="view-specs-btn"
                     onClick={() => setShowAdvancedSpecs(true)}
                     style={{
-                      background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
-                      border: '1px solid #00ff88',
-                      color: '#00ff88',
+                      background: '#1a1a1a',
+                      border: 'none',
+                      color: '#fff',
                       padding: '0.8rem 1.5rem',
                       borderRadius: '8px',
                       cursor: 'pointer',
@@ -317,12 +317,10 @@ const DeviceDetail = () => {
                       flex: 1,
                       justifyContent: 'center',
                       transition: 'all 0.3s ease',
-                      boxShadow: '0 0 10px rgba(0, 255, 136, 0.2)',
-                      fontWeight: 'bold',
-                      letterSpacing: '1px'
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                     }}
                   >
-                    <FaMicrochip /> OVERKILL
+                    <FaMicrochip /> Advanced Specs
                   </button>
                 </div>
 
