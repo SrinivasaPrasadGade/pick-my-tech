@@ -347,47 +347,96 @@ const originalDevices = [
   }
 ]; // End of original devices array - now using generated devices from deviceGenerator.js
 
-const newsItems = [
-  {
-    title: 'Apple Announces New AI Features in iOS 18',
-    description: 'Apple introduces groundbreaking AI capabilities that will revolutionize iPhone usage.',
-    content: 'Apple has announced revolutionary AI features coming to iOS 18...',
-    url: 'https://example.com/news/apple-ai',
-    imageUrl: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800',
-    source: 'Tech News',
-    author: 'Tech Reporter',
-    publishedAt: new Date(),
-    category: 'mobile',
-    tags: ['Apple', 'iOS', 'AI'],
-    featured: true
-  },
-  {
-    title: 'New Gaming Laptops Dominate CES 2024',
-    description: 'Latest gaming laptops with RTX 4090 and advanced cooling systems unveiled.',
-    content: 'CES 2024 showcased the most powerful gaming laptops ever created...',
-    url: 'https://example.com/news/gaming-laptops',
-    imageUrl: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800',
-    source: 'Gaming Tech',
-    author: 'Gaming Editor',
-    publishedAt: new Date(),
-    category: 'laptop',
-    tags: ['Gaming', 'Laptops', 'CES'],
-    featured: true
-  },
-  {
-    title: 'Samsung Galaxy S24 Ultra Camera Review',
-    description: 'In-depth review of the 200MP camera system in Samsung\'s latest flagship.',
-    content: 'The Samsung Galaxy S24 Ultra features an impressive 200MP camera...',
-    url: 'https://example.com/news/samsung-camera',
-    imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800',
-    source: 'Camera Reviews',
-    author: 'Photo Expert',
-    publishedAt: new Date(),
-    category: 'mobile',
-    tags: ['Samsung', 'Camera', 'Review'],
-    featured: false
-  }
-];
+// Helper to generate news items
+const generateNewsItems = () => {
+  const categories = ['mobile', 'laptop', 'tablet', 'smartwatch', 'general', 'reviews', 'rumors'];
+  const news = [];
+
+  const templates = {
+    mobile: [
+      { t: 'iPhone 16 Pro Leaks: Bigger Battery', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800' },
+      { t: 'Samsung Galaxy S25 Ultra Concepts', img: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800' },
+      { t: 'Pixel 9 Pro Camera Samples', img: 'https://images.unsplash.com/photo-1598327105666-5b89351aff70?w=800' },
+      { t: 'OnePlus 13 Fast Charging', img: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=800' },
+      { t: 'Xiaomi 15 Ultra Global Launch', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800' },
+      { t: 'Nothing Phone (3) Design Reveal', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800' }
+    ],
+    laptop: [
+      { t: 'MacBook Pro M4 Performance', img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?w=800' },
+      { t: 'Dell XPS 15 2025 Refresh', img: 'https://images.unsplash.com/photo-1593642632823-8f78536788c6?w=800' },
+      { t: 'Lenovo ThinkPad X1 Carbon Gen 13', img: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800' },
+      { t: 'Asus ROG Zephyrus G14 Review', img: 'https://images.unsplash.com/photo-1593642632823-8f78536788c6?w=800' },
+      { t: 'HP Spectre x360 14 OLED', img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?w=800' },
+      { t: 'Framework Laptop 16 Updates', img: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800' }
+    ],
+    tablet: [
+      { t: 'iPad Pro OLED Long Term Review', img: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800' },
+      { t: 'Samsung Galaxy Tab S10 Ultra Leaks', img: 'https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=800' },
+      { t: 'Pixel Tablet 2 with Keyboard', img: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800' },
+      { t: 'iPad Mini 7 Release Date', img: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800' },
+      { t: 'OnePlus Pad 2 Specs', img: 'https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=800' },
+      { t: 'Amazon Fire Max 11 Review', img: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800' }
+    ],
+    smartwatch: [
+      { t: 'Apple Watch Series 10 Redesign', img: 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800' },
+      { t: 'Samsung Galaxy Watch 7 Pro Battery', img: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800' },
+      { t: 'Garmin Fenix 8 Solar Features', img: 'https://images.unsplash.com/photo-1551817958-c1b0c0f36961?w=800' },
+      { t: 'Pixel Watch 3 Sizes', img: 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800' },
+      { t: 'Fitbit Charge 7 Rumors', img: 'https://images.unsplash.com/photo-1551817958-c1b0c0f36961?w=800' },
+      { t: 'Whoop 5.0 Expectations', img: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800' }
+    ],
+    general: [
+      { t: 'OpenAI GPT-5 Release Timeline', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800' },
+      { t: 'NVIDIA RTX 5090 Specs Leaked', img: 'https://images.unsplash.com/photo-1558002038-1091a1661116?w=800' },
+      { t: 'Windows 12 AI Features', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800' },
+      { t: 'Tesla Robotaxi Event Recap', img: 'https://images.unsplash.com/photo-1558002038-1091a1661116?w=800' },
+      { t: 'SpaceX Starship Launch Success', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800' },
+      { t: 'Matter Smart Home Update', img: 'https://images.unsplash.com/photo-1558002038-1091a1661116?w=800' }
+    ],
+    reviews: [
+      { t: 'Sony WH-1000XM6 Review', img: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800' },
+      { t: 'Bose QuietComfort Ultra Review', img: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800' },
+      { t: 'Sonos Ace Headphones Review', img: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800' },
+      { t: 'Kindle Paperwhite 2024 Review', img: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800' },
+      { t: 'Logitech MX Master 3S Review', img: 'https://images.unsplash.com/photo-1593642632823-8f78536788c6?w=800' },
+      { t: 'Steam Deck OLED Review', img: 'https://images.unsplash.com/photo-1612287230217-969b698cb8d1?w=800' }
+    ],
+    rumors: [
+      { t: 'Nintendo Switch 2 Specs Leak', img: 'https://images.unsplash.com/photo-1612287230217-969b698cb8d1?w=800' },
+      { t: 'PS5 Pro Release Date', img: 'https://images.unsplash.com/photo-1612287230217-969b698cb8d1?w=800' },
+      { t: 'Xbox Handheld Console Rumors', img: 'https://images.unsplash.com/photo-1612287230217-969b698cb8d1?w=800' },
+      { t: 'Apple Foldable iPhone Plans', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800' },
+      { t: 'Samsung Rollable Phone Demo', img: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800' },
+      { t: 'Apple Smart Ring Patents', img: 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800' }
+    ]
+  };
+
+  categories.forEach(category => {
+    // Ensure at least 12 items per category
+    for (let i = 0; i < 12; i++) {
+      const template = templates[category][i % templates[category].length];
+      const dateOffset = Math.floor(Math.random() * 30); // Random date within last 30 days
+
+      news.push({
+        title: i < 6 ? template.t : `${template.t} - Update ${i - 5}`,
+        description: `Latest updates and news regarding ${template.t}. This article covers everything you need to know about the recent developments, specs, and release information.`,
+        content: `Full detailed coverage of ${template.t}. We dive deep into the specifications, features, and what this means for the industry.`,
+        url: 'https://techcrunch.com',
+        imageUrl: template.img,
+        source: ['The Verge', 'TechCrunch', 'Engadget', 'MacRumors', '9to5Google'][Math.floor(Math.random() * 5)],
+        author: 'Tech Reporter',
+        publishedAt: new Date(Date.now() - dateOffset * 86400000),
+        category: category,
+        tags: [category, 'Tech', 'News'],
+        featured: i === 0 // First item of each category is featured
+      });
+    }
+  });
+
+  return news;
+};
+
+const newsItems = generateNewsItems();
 
 const seedDatabase = async () => {
   try {

@@ -26,7 +26,7 @@ const News = () => {
     }
   };
 
-  const categories = ['', 'mobile', 'laptop', 'tablet', 'general', 'reviews'];
+  const categories = ['', 'mobile', 'laptop', 'tablet', 'smartwatch', 'general', 'reviews', 'rumors'];
 
   return (
     <div className="news-page">
@@ -62,8 +62,12 @@ const News = () => {
                 <a href={item.url} target="_blank" rel="noopener noreferrer" className="news-card-large">
                   <div className="news-image-large">
                     <img
-                      src={item.imageUrl || 'https://via.placeholder.com/600'}
+                      src={item.imageUrl || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800'}
                       alt={item.title}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800';
+                      }}
                     />
                     {item.featured && <span className="featured-badge">Featured</span>}
                   </div>
