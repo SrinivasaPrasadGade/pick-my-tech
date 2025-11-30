@@ -89,7 +89,7 @@ const PriceHistoryModal = ({ isOpen, onClose, currentPrice, deviceName }) => {
                                     <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e0e0" />
                             <XAxis
                                 dataKey="name"
                                 axisLine={false}

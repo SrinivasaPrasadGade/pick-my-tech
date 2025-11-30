@@ -281,8 +281,8 @@ const DeviceDetail = () => {
                   onClick={() => setShowPriceHistory(true)}
                   style={{
                     marginTop: '1rem',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: '#1a1a1a',
+                    border: 'none',
                     color: '#fff',
                     padding: '0.8rem 1.5rem',
                     borderRadius: '8px',
@@ -292,7 +292,8 @@ const DeviceDetail = () => {
                     gap: '0.5rem',
                     width: '100%',
                     justifyContent: 'center',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                   }}
                 >
                   <FaChartLine /> View Price History

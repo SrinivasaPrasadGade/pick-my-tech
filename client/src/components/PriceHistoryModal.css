@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
     display: flex;
     justify-content: center;
@@ -14,15 +14,14 @@
 }
 
 .price-modal-content {
-    background: rgba(30, 30, 30, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #ffffff;
     border-radius: 20px;
     width: 90%;
     max-width: 600px;
     padding: 2rem;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
     animation: slideUp 0.3s ease;
+    color: #333;
 }
 
 .price-modal-header {
@@ -35,14 +34,13 @@
 .price-modal-header h2 {
     margin: 0;
     font-size: 1.8rem;
-    background: linear-gradient(45deg, #fff, #a0a0a0);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #1a1a1a;
+    background: none;
+    -webkit-text-fill-color: initial;
 }
 
 .device-name-subtitle {
-    color: #888;
+    color: #666;
     margin: 0.5rem 0 0 0;
     font-size: 1rem;
 }
@@ -50,7 +48,7 @@
 .close-btn {
     background: none;
     border: none;
-    color: #888;
+    color: #666;
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.5rem;
@@ -58,7 +56,7 @@
 }
 
 .close-btn:hover {
-    color: #fff;
+    color: #000;
 }
 
 .price-summary-cards {
@@ -69,54 +67,58 @@
 }
 
 .summary-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f5f5f7;
     border-radius: 12px;
     padding: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    border: 1px solid #e0e0e0;
 }
 
 .summary-card .label {
     font-size: 0.8rem;
-    color: #888;
+    color: #666;
     margin-bottom: 0.5rem;
 }
 
 .summary-card .value {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #fff;
+    color: #1a1a1a;
 }
 
 .summary-card .value.down {
-    color: #4caf50;
+    color: #2e7d32;
+    /* Darker green for light mode */
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
 .summary-card .value.up {
-    color: #ff5252;
+    color: #d32f2f;
+    /* Darker red for light mode */
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
 .chart-container {
-    background: rgba(0, 0, 0, 0.2);
+    background: #f9f9f9;
     border-radius: 16px;
     padding: 1rem;
     margin-bottom: 2rem;
+    border: 1px solid #eee;
 }
 
 .price-alert-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(136, 132, 216, 0.1);
-    border: 1px solid rgba(136, 132, 216, 0.3);
+    background: #f0f4ff;
+    border: 1px solid #d0d7ff;
     border-radius: 12px;
     padding: 1rem;
 }
@@ -128,24 +130,24 @@
 }
 
 .bell-icon {
-    color: #8884d8;
+    color: #5c6bc0;
     font-size: 1.5rem;
 }
 
 .alert-info h4 {
     margin: 0;
-    color: #fff;
+    color: #333;
     font-size: 1rem;
 }
 
 .alert-info p {
     margin: 0.2rem 0 0 0;
-    color: #aaa;
+    color: #666;
     font-size: 0.8rem;
 }
 
 .set-alert-btn {
-    background: #8884d8;
+    background: #5c6bc0;
     color: #fff;
     border: none;
     padding: 0.8rem 1.5rem;
@@ -156,7 +158,7 @@
 }
 
 .set-alert-btn:hover {
-    background: #7671d3;
+    background: #3f51b5;
 }
 
 @keyframes fadeIn {
