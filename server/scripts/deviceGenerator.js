@@ -341,10 +341,10 @@ const generateAllDevices = () => {
     { name: 'OnePlus 11', price: 699, ram: '16GB', storage: '256GB', processor: 'Snapdragon 8 Gen 2', display: '6.7 inch', battery: '5000 mAh', date: '2023-02-07', camera: '50MP + 32MP + 48MP' },
     { name: 'OnePlus Nord 3', price: 449, ram: '16GB', storage: '256GB', processor: 'MediaTek Dimensity 9000', display: '6.74 inch', battery: '5000 mAh', date: '2023-07-05', camera: '50MP + 8MP + 2MP' },
     { name: 'OnePlus 10 Pro', price: 899, ram: '12GB', storage: '256GB', processor: 'Snapdragon 8 Gen 1', display: '6.7 inch', battery: '5000 mAh', date: '2022-03-31', camera: '48MP + 8MP + 50MP' },
-    { name: 'OnePlus 9 Pro', price: 969, ram: '12GB', storage: '256GB', processor: 'Snapdragon 888', display: '6.7 inch', battery: '4500 mAh', date: '2021-03-23', camera: '48MP + 8MP + 50MP + 2MP' },
+    { name: 'OnePlus 9 Pro', price: 969, ram: '12GB', storage: '256GB', processor: 'Snapdragon 888', display: '6.7 inch', battery: '4500 mAh', date: '2021-03-23', camera: '48MP + 8MP + 50MP + 2MP', image: 'https://images.unsplash.com/photo-1636487654353-9523ddcb32ca?w=800&q=80' },
     { name: 'OnePlus Nord CE 3', price: 299, ram: '8GB', storage: '128GB', processor: 'Snapdragon 782G', display: '6.7 inch', battery: '5000 mAh', date: '2023-06-01', camera: '50MP + 8MP + 2MP' },
     { name: 'OnePlus 8T', price: 749, ram: '12GB', storage: '256GB', processor: 'Snapdragon 865', display: '6.55 inch', battery: '4500 mAh', date: '2020-10-14', camera: '48MP + 16MP + 5MP + 2MP' },
-    { name: 'OnePlus Nord 2T', price: 399, ram: '8GB', storage: '128GB', processor: 'MediaTek Dimensity 1300', display: '6.43 inch', battery: '4500 mAh', date: '2022-05-19', camera: '50MP + 8MP + 2MP' }
+    { name: 'OnePlus Nord 2T', price: 399, ram: '8GB', storage: '128GB', processor: 'MediaTek Dimensity 1300', display: '6.43 inch', battery: '4500 mAh', date: '2022-05-19', camera: '50MP + 8MP + 2MP', image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff23?w=800&q=80' }
   ];
 
   oneplusMobiles.forEach(m => {
@@ -394,7 +394,7 @@ const generateAllDevices = () => {
     { name: 'Motorola Moto G84', price: 249, ram: '12GB', storage: '256GB', processor: 'Snapdragon 695', display: '6.5 inch', battery: '5000 mAh', date: '2023-09-01', camera: '50MP + 8MP' },
     { name: 'Motorola Edge 30 Pro', price: 749, ram: '12GB', storage: '256GB', processor: 'Snapdragon 8 Gen 1', display: '6.7 inch', battery: '4800 mAh', date: '2022-03-03', camera: '50MP + 50MP + 2MP' },
     { name: 'Motorola Moto G73', price: 229, ram: '8GB', storage: '128GB', processor: 'MediaTek Dimensity 930', display: '6.5 inch', battery: '5000 mAh', date: '2023-01-24', camera: '50MP + 8MP' },
-    { name: 'Motorola Razr 40 Ultra', price: 999, ram: '12GB', storage: '512GB', processor: 'Snapdragon 8+ Gen 1', display: '6.9 inch', battery: '3800 mAh', date: '2023-06-01', camera: '12MP + 13MP' },
+    { name: 'Motorola Razr 40 Ultra', price: 999, ram: '12GB', storage: '512GB', processor: 'Snapdragon 8+ Gen 1', display: '6.9 inch', battery: '3800 mAh', date: '2023-06-01', camera: '12MP + 13MP', image: 'https://images.unsplash.com/photo-1626218174397-5780d8b44538?w=800&q=80' },
     { name: 'Motorola Moto G54', price: 199, ram: '8GB', storage: '128GB', processor: 'MediaTek Dimensity 7020', display: '6.5 inch', battery: '5000 mAh', date: '2023-09-05', camera: '50MP + 8MP' },
     { name: 'Motorola Edge 20 Pro', price: 649, ram: '12GB', storage: '256GB', processor: 'Snapdragon 870', display: '6.7 inch', battery: '4500 mAh', date: '2021-08-19', camera: '108MP + 16MP + 8MP' }
   ];
