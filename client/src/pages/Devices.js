@@ -134,9 +134,18 @@ const Devices = () => {
             <select
               value={`${filters.sort}-${filters.order}`}
               onChange={(e) => {
-                const [sort, order] = e.target.value.split('-');
-                handleFilterChange('sort', sort);
-                handleFilterChange('order', order);
+                const [newSort, newOrder] = e.target.value.split('-');
+                setFilters(prev => ({ ...prev, sort: newSort, order: newOrder }));
+
+                const newParams = new URLSearchParams();
+                Object.keys({ ...filters, sort: newSort, order: newOrder }).forEach(k => {
+                  if (filters[k] || (k === 'sort' && newSort) || (k === 'order' && newOrder)) {
+                    // Skip if key is sort/order as we handle them explicitly, or other empty keys
+                    if (k !== 'sort' && k !== 'order' && !filters[k]) return;
+                    newParams.append(k, k === 'sort' ? newSort : k === 'order' ? newOrder : filters[k]);
+                  }
+                });
+                setSearchParams(newParams);
               }}
             >
               <option value="createdAt-desc">Newest First</option>

@@ -3,57 +3,67 @@
 
 // Helper to generate image URLs based on device type
 const getImageUrl = (brand, category, name) => {
-  // Use device-specific Unsplash collections or search terms
-  const imageMap = {
-    'Apple': {
-      'mobile': 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&q=80',
-      'laptop': 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800&q=80',
-      'tablet': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
-      'smartwatch': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80',
-      'headphones': 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80'
-    },
-    'Samsung': {
-      'mobile': 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&q=80',
-      'tablet': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
-      'smartwatch': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80'
-    },
-    'Google': {
-      'mobile': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
-      'tablet': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
-      'smartwatch': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80'
-    },
-    'Dell': {
-      'laptop': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80'
-    },
-    'HP': {
-      'laptop': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80'
-    },
-    'Lenovo': {
-      'laptop': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80'
-    },
-    'Asus': {
-      'laptop': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80'
-    },
-    'MSI': {
-      'laptop': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80'
-    }
+  // Image collections by category
+  const imageCollections = {
+    'mobile': [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&q=80', // iPhone
+      'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&q=80', // Samsung
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80', // Pixel
+      'https://images.unsplash.com/photo-1598327105666-5b89351aff23?w=800&q=80', // Generic
+      'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=800&q=80', // Phone
+      'https://images.unsplash.com/photo-1533228100845-08145b01de14?w=800&q=80', // Phone
+      'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=800&q=80', // Phone
+      'https://images.unsplash.com/photo-1580910051074-3eb6948d3ea0?w=800&q=80', // Phone
+      'https://images.unsplash.com/photo-1573148195900-7845dcb9b858?w=800&q=80', // Phone
+      'https://images.unsplash.com/photo-1512054502232-10a0a0e79743?w=800&q=80'  // Phone
+    ],
+    'laptop': [
+      'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800&q=80', // MacBook
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80', // Laptop
+      'https://images.unsplash.com/photo-1531297461136-82lw9b21085ab?w=800&q=80', // Laptop
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&q=80', // MacBook
+      'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&q=80', // Laptop
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&q=80', // Laptop
+      'https://images.unsplash.com/photo-1593642632823-8f78536788c6?w=800&q=80', // Dell
+      'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&q=80', // Laptop
+      'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&q=80', // Laptop
+      'https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?w=800&q=80'  // Laptop
+    ],
+    'tablet': [
+      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80', // iPad
+      'https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=800&q=80', // Tablet
+      'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=800&q=80', // Tablet
+      'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=800&q=80', // Tablet
+      'https://images.unsplash.com/photo-1589739900243-4b52cd9b104e?w=800&q=80', // Tablet
+      'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?w=800&q=80', // Tablet
+      'https://images.unsplash.com/photo-1527698266440-12104e498b36?w=800&q=80'  // Tablet
+    ],
+    'smartwatch': [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80', // Watch
+      'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80', // Watch
+      'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800&q=80', // Watch
+      'https://images.unsplash.com/photo-1544117519-31a4b719223d?w=800&q=80', // Watch
+      'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80', // Watch
+      'https://images.unsplash.com/photo-1517502474097-f9b30659dadb?w=800&q=80'  // Watch
+    ],
+    'headphones': [
+      'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80', // Headphones
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80', // Headphones
+      'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80', // Headphones
+      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=80', // Headphones
+      'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80', // Earbuds
+      'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&q=80', // Headphones
+      'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80'  // Headphones
+    ]
   };
-  
-  // Try to get brand-specific image, fallback to category-specific, then generic
-  if (imageMap[brand] && imageMap[brand][category]) {
-    return imageMap[brand][category];
-  }
-  
-  // Generic images by category
-  const categoryImages = {
-    'mobile': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
-    'laptop': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80',
-    'tablet': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
-    'smartwatch': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80',
-    'headphones': 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80'
-  };
-  
-  return categoryImages[category] || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
+
+  // Simple hash function to get a consistent index from the name
+  const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+  const images = imageCollections[category] || imageCollections['mobile'];
+  const index = hash % images.length;
+
+  return images[index];
 };
 
 const generateDevice = (template, variations = {}) => {
@@ -126,7 +136,7 @@ const mobileTemplates = {
 // Generate all 200 devices
 const generateAllDevices = () => {
   const devices = [];
-  
+
   // Helper function to add device with specific specs
   const addDevice = (name, brand, category, specs, prices, tags, releaseDate, description) => {
     devices.push(generateDevice({
@@ -167,8 +177,8 @@ const generateAllDevices = () => {
       operatingSystem: m.name.includes('15') ? 'iOS 17' : m.name.includes('14') ? 'iOS 16' : 'iOS 15',
       dimensions: { length: m.display.includes('6.7') ? '160.9 mm' : '147.6 mm', width: m.display.includes('6.7') ? '77.8 mm' : '71.6 mm', height: '7.80 mm', weight: m.display.includes('6.7') ? '221 g' : '187 g' }
     }, [{ source: 'Apple Store', url: 'https://apple.com', price: m.price, currency: 'USD' }],
-    m.name.includes('Pro') ? ['premium', 'photography', 'gaming'] : ['premium'],
-    m.date, `${m.name} - ${m.name.includes('Pro') ? 'Premium' : 'Flagship'} iPhone with ${m.processor}`);
+      m.name.includes('Pro') ? ['premium', 'photography', 'gaming'] : ['premium'],
+      m.date, `${m.name} - ${m.name.includes('Pro') ? 'Premium' : 'Flagship'} iPhone with ${m.processor}`);
   });
 
   // Samsung (15)
@@ -201,8 +211,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Android 14',
       dimensions: { length: '162.3 mm', width: '79.0 mm', height: '8.6 mm', weight: '233 g' }
     }, [{ source: 'Samsung Store', url: 'https://samsung.com', price: m.price, currency: 'USD' }],
-    m.price > 800 ? ['premium', 'photography'] : m.price > 400 ? ['mid-range'] : ['budget'],
-    m.date, `${m.name} - ${m.price > 800 ? 'Premium' : 'Flagship'} Samsung smartphone`);
+      m.price > 800 ? ['premium', 'photography'] : m.price > 400 ? ['mid-range'] : ['budget'],
+      m.date, `${m.name} - ${m.price > 800 ? 'Premium' : 'Flagship'} Samsung smartphone`);
   });
 
   // Google (8)
@@ -228,8 +238,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Android 14',
       dimensions: { length: '162.6 mm', width: '76.5 mm', height: '8.8 mm', weight: '213 g' }
     }, [{ source: 'Google Store', url: 'https://store.google.com', price: m.price, currency: 'USD' }],
-    m.price > 700 ? ['premium', 'photography'] : ['mid-range'],
-    m.date, `${m.name} - ${m.price > 700 ? 'Premium' : 'Flagship'} Google Pixel smartphone`);
+      m.price > 700 ? ['premium', 'photography'] : ['mid-range'],
+      m.date, `${m.name} - ${m.price > 700 ? 'Premium' : 'Flagship'} Google Pixel smartphone`);
   });
 
   // Xiaomi/Redmi/Poco (20)
@@ -267,8 +277,8 @@ const generateAllDevices = () => {
       operatingSystem: 'MIUI 14',
       dimensions: { length: '161.1 mm', width: '75.0 mm', height: '8.0 mm', weight: '187 g' }
     }, [{ source: `${m.brand} Store`, url: `https://${m.brand.toLowerCase()}.com`, price: m.price, currency: 'USD' }],
-    m.price > 600 ? ['premium', 'gaming'] : m.price > 300 ? ['mid-range'] : ['budget'],
-    m.date, `${m.name} - ${m.brand} smartphone`);
+      m.price > 600 ? ['premium', 'gaming'] : m.price > 300 ? ['mid-range'] : ['budget'],
+      m.date, `${m.name} - ${m.brand} smartphone`);
   });
 
   // Realme (8)
@@ -294,8 +304,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Realme UI 5.0',
       dimensions: { length: '161.5 mm', width: '74.0 mm', height: '8.7 mm', weight: '196 g' }
     }, [{ source: 'Realme Store', url: 'https://realme.com', price: m.price, currency: 'USD' }],
-    m.price > 500 ? ['premium', 'gaming'] : ['mid-range'],
-    m.date, `${m.name} - Realme smartphone`);
+      m.price > 500 ? ['premium', 'gaming'] : ['mid-range'],
+      m.date, `${m.name} - Realme smartphone`);
   });
 
   // OnePlus (8)
@@ -321,8 +331,8 @@ const generateAllDevices = () => {
       operatingSystem: 'OxygenOS 14',
       dimensions: { length: '164.3 mm', width: '75.8 mm', height: '9.2 mm', weight: '220 g' }
     }, [{ source: 'OnePlus Store', url: 'https://oneplus.com', price: m.price, currency: 'USD' }],
-    m.price > 600 ? ['premium'] : ['mid-range'],
-    m.date, `${m.name} - OnePlus flagship`);
+      m.price > 600 ? ['premium'] : ['mid-range'],
+      m.date, `${m.name} - OnePlus flagship`);
   });
 
   // Oppo (6)
@@ -346,8 +356,8 @@ const generateAllDevices = () => {
       operatingSystem: 'ColorOS 14',
       dimensions: { length: '164.3 mm', width: '76.2 mm', height: '9.5 mm', weight: '221 g' }
     }, [{ source: 'OPPO Store', url: 'https://oppo.com', price: m.price, currency: 'USD' }],
-    m.price > 800 ? ['premium', 'photography'] : ['mid-range'],
-    m.date, `${m.name} - OPPO flagship`);
+      m.price > 800 ? ['premium', 'photography'] : ['mid-range'],
+      m.date, `${m.name} - OPPO flagship`);
   });
 
   // Motorola (8)
@@ -373,8 +383,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Android 13',
       dimensions: { length: '161.2 mm', width: '74.0 mm', height: '8.6 mm', weight: '199 g' }
     }, [{ source: 'Motorola Store', url: 'https://motorola.com', price: m.price, currency: 'USD' }],
-    m.price > 600 ? ['premium'] : ['mid-range'],
-    m.date, `${m.name} - Motorola smartphone`);
+      m.price > 600 ? ['premium'] : ['mid-range'],
+      m.date, `${m.name} - Motorola smartphone`);
   });
 
   // Sony (3)
@@ -395,8 +405,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Android 13',
       dimensions: { length: '165 mm', width: '71 mm', height: '8.3 mm', weight: '187 g' }
     }, [{ source: 'Sony Store', url: 'https://sony.com', price: m.price, currency: 'USD' }],
-    ['premium', 'photography'],
-    m.date, `${m.name} - Sony Xperia`);
+      ['premium', 'photography'],
+      m.date, `${m.name} - Sony Xperia`);
   });
 
   // Continue with laptops, tablets, watches, headphones...
@@ -428,8 +438,8 @@ const generateAllDevices = () => {
       operatingSystem: 'macOS Sonoma',
       dimensions: { length: '355.7 mm', width: '248.1 mm', height: '16.8 mm', weight: '2.15 kg' }
     }, [{ source: 'Apple Store', url: 'https://apple.com', price: m.price, currency: 'USD' }],
-    ['premium', 'productivity', 'creative'],
-    m.date, `${m.name} - ${m.processor} chip`);
+      ['premium', 'productivity', 'creative'],
+      m.date, `${m.name} - ${m.processor} chip`);
   });
 
   // Continue generating more laptops, tablets, watches, and headphones to reach 200...
@@ -460,8 +470,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Windows 11',
       dimensions: { length: '344.4 mm', width: '230.1 mm', height: '18.0 mm', weight: '1.92 kg' }
     }, [{ source: 'Dell Store', url: 'https://dell.com', price: m.price, currency: 'USD' }],
-    m.price > 2000 ? ['premium', 'gaming', 'creative'] : m.price > 1000 ? ['premium', 'productivity'] : ['mid-range'],
-    m.date, `${m.name} - Dell laptop`);
+      m.price > 2000 ? ['premium', 'gaming', 'creative'] : m.price > 1000 ? ['premium', 'productivity'] : ['mid-range'],
+      m.date, `${m.name} - Dell laptop`);
   });
 
   // HP Laptops (8)
@@ -487,8 +497,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Windows 11',
       dimensions: { length: '360 mm', width: '250 mm', height: '20 mm', weight: '2.0 kg' }
     }, [{ source: 'HP Store', url: 'https://hp.com', price: m.price, currency: 'USD' }],
-    m.price > 1500 ? ['premium', 'gaming'] : m.price > 800 ? ['mid-range'] : ['budget'],
-    m.date, `${m.name} - HP laptop`);
+      m.price > 1500 ? ['premium', 'gaming'] : m.price > 800 ? ['mid-range'] : ['budget'],
+      m.date, `${m.name} - HP laptop`);
   });
 
   // Lenovo Laptops (8)
@@ -514,8 +524,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Windows 11',
       dimensions: { length: '356 mm', width: '250 mm', height: '18 mm', weight: '1.9 kg' }
     }, [{ source: 'Lenovo Store', url: 'https://lenovo.com', price: m.price, currency: 'USD' }],
-    m.price > 1500 ? ['premium', 'productivity'] : ['mid-range'],
-    m.date, `${m.name} - Lenovo laptop`);
+      m.price > 1500 ? ['premium', 'productivity'] : ['mid-range'],
+      m.date, `${m.name} - Lenovo laptop`);
   });
 
   // Asus Laptops (8)
@@ -541,8 +551,8 @@ const generateAllDevices = () => {
       operatingSystem: m.name.includes('Chromebook') ? 'Chrome OS' : 'Windows 11',
       dimensions: { length: '355 mm', width: '243 mm', height: '20 mm', weight: '2.0 kg' }
     }, [{ source: 'Asus Store', url: 'https://asus.com', price: m.price, currency: 'USD' }],
-    m.price > 1500 ? ['premium', 'gaming'] : ['mid-range'],
-    m.date, `${m.name} - Asus laptop`);
+      m.price > 1500 ? ['premium', 'gaming'] : ['mid-range'],
+      m.date, `${m.name} - Asus laptop`);
   });
 
   // MSI Laptops (8)
@@ -568,8 +578,8 @@ const generateAllDevices = () => {
       operatingSystem: 'Windows 11',
       dimensions: { length: '397 mm', width: '284 mm', height: '23 mm', weight: '2.9 kg' }
     }, [{ source: 'MSI Store', url: 'https://msi.com', price: m.price, currency: 'USD' }],
-    m.price > 2000 ? ['premium', 'gaming', 'creative'] : ['mid-range', 'gaming'],
-    m.date, `${m.name} - MSI laptop`);
+      m.price > 2000 ? ['premium', 'gaming', 'creative'] : ['mid-range', 'gaming'],
+      m.date, `${m.name} - MSI laptop`);
   });
 
   // TABLETS - 20 devices
@@ -607,8 +617,8 @@ const generateAllDevices = () => {
       operatingSystem: m.brand === 'Apple' ? 'iPadOS 17' : 'Android 13',
       dimensions: { length: '280.6 mm', width: '214.9 mm', height: '6.4 mm', weight: '682 g' }
     }, [{ source: `${m.brand} Store`, url: `https://${m.brand.toLowerCase()}.com`, price: m.price, currency: 'USD' }],
-    m.price > 700 ? ['premium'] : ['mid-range'],
-    m.date, `${m.name} - ${m.brand} tablet`);
+      m.price > 700 ? ['premium'] : ['mid-range'],
+      m.date, `${m.name} - ${m.brand} tablet`);
   });
 
   // SMARTWATCHES - 20 devices
@@ -646,8 +656,8 @@ const generateAllDevices = () => {
       operatingSystem: m.brand === 'Apple' ? 'watchOS 10' : 'Wear OS',
       dimensions: { length: m.size, width: m.size, height: '12 mm', weight: '45 g' }
     }, [{ source: `${m.brand} Store`, url: `https://${m.brand.toLowerCase()}.com`, price: m.price, currency: 'USD' }],
-    m.price > 400 ? ['premium'] : ['mid-range'],
-    m.date, `${m.name} - ${m.brand} smartwatch`);
+      m.price > 400 ? ['premium'] : ['mid-range'],
+      m.date, `${m.name} - ${m.brand} smartwatch`);
   });
 
   // HEADPHONES/EARBUDS - 20 devices
@@ -685,8 +695,8 @@ const generateAllDevices = () => {
       operatingSystem: 'N/A',
       dimensions: { length: 'N/A', width: 'N/A', height: 'N/A', weight: '5 g' }
     }, [{ source: `${m.brand} Store`, url: `https://${m.brand.toLowerCase()}.com`, price: m.price, currency: 'USD' }],
-    m.price > 250 ? ['premium', 'audio'] : ['mid-range'],
-    m.date, `${m.name} - ${m.brand} ${m.type} headphones`);
+      m.price > 250 ? ['premium', 'audio'] : ['mid-range'],
+      m.date, `${m.name} - ${m.brand} ${m.type} headphones`);
   });
 
   // Add 4 more devices to reach exactly 200
@@ -700,7 +710,7 @@ const generateAllDevices = () => {
     operatingSystem: 'iOS 15',
     dimensions: { length: '146.7 mm', width: '71.5 mm', height: '7.65 mm', weight: '203 g' }
   }, [{ source: 'Apple Store', url: 'https://apple.com', price: 799, currency: 'USD' }],
-  ['premium'], '2021-09-24', 'iPhone 13 Pro with A15 Bionic chip');
+    ['premium'], '2021-09-24', 'iPhone 13 Pro with A15 Bionic chip');
 
   addDevice('Samsung Galaxy A14', 'Samsung', 'mobile', {
     display: { size: '6.6 inch', resolution: '2408 x 1080', type: 'PLS LCD', refreshRate: '90Hz', features: [] },
@@ -712,7 +722,7 @@ const generateAllDevices = () => {
     operatingSystem: 'Android 13',
     dimensions: { length: '167.7 mm', width: '78.0 mm', height: '9.1 mm', weight: '201 g' }
   }, [{ source: 'Samsung Store', url: 'https://samsung.com', price: 149, currency: 'USD' }],
-  ['budget'], '2023-03-28', 'Samsung Galaxy A14 budget smartphone');
+    ['budget'], '2023-03-28', 'Samsung Galaxy A14 budget smartphone');
 
   addDevice('Dell Inspiron 16', 'Dell', 'laptop', {
     display: { size: '16 inch', resolution: '1920 x 1200', type: 'IPS', refreshRate: '60Hz', features: [] },
@@ -724,7 +734,7 @@ const generateAllDevices = () => {
     operatingSystem: 'Windows 11',
     dimensions: { length: '356.78 mm', width: '251.9 mm', height: '18.99 mm', weight: '1.87 kg' }
   }, [{ source: 'Dell Store', url: 'https://dell.com', price: 699, currency: 'USD' }],
-  ['mid-range', 'productivity'], '2023-06-15', 'Dell Inspiron 16 laptop');
+    ['mid-range', 'productivity'], '2023-06-15', 'Dell Inspiron 16 laptop');
 
   addDevice('HP Pavilion 15', 'HP', 'laptop', {
     display: { size: '15.6 inch', resolution: '1920 x 1080', type: 'IPS', refreshRate: '60Hz', features: [] },
@@ -736,7 +746,7 @@ const generateAllDevices = () => {
     operatingSystem: 'Windows 11',
     dimensions: { length: '360.2 mm', width: '234.0 mm', height: '19.9 mm', weight: '1.75 kg' }
   }, [{ source: 'HP Store', url: 'https://hp.com', price: 549, currency: 'USD' }],
-  ['budget', 'productivity'], '2023-04-20', 'HP Pavilion 15 laptop');
+    ['budget', 'productivity'], '2023-04-20', 'HP Pavilion 15 laptop');
 
   return devices.slice(0, 200); // Ensure exactly 200 devices
 };
