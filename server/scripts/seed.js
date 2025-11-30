@@ -10,7 +10,13 @@ const { generateCommunityPosts } = require('./generateCommunity');
 dotenv.config();
 
 // Generate all 200 devices
-const devices = generateAllDevices();
+const allDevices = generateAllDevices();
+
+// Shuffle devices to ensure a mix of categories in the initial view
+const devices = allDevices
+  .map(value => ({ value, sort: Math.random() }))
+  .sort((a, b) => a.sort - b.sort)
+  .map(({ value }) => value);
 
 // Keep original seed devices for reference (optional - you can remove this if you want)
 const originalDevices = [
@@ -398,7 +404,7 @@ const seedDatabase = async () => {
     await Device.deleteMany({});
     await News.deleteMany({});
     await Community.deleteMany({});
-    
+
     // Create or get a test user for community posts
     let testUser = await User.findOne({ email: 'community@test.com' });
     if (!testUser) {
