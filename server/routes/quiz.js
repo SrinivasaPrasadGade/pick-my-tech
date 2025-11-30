@@ -7,13 +7,8 @@ const { protect } = require('../middleware/auth');
 router.post('/', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    
-    if (user.quizCompleted) {
-      return res.status(400).json({
-        success: false,
-        message: 'Quiz already completed'
-      });
-    }
+
+    // Allow retaking the quiz - removed check for user.quizCompleted
 
     const quizAnswers = req.body;
     user.quizAnswers = quizAnswers;
@@ -55,7 +50,7 @@ router.put('/', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     const quizAnswers = req.body;
-    
+
     user.quizAnswers = { ...user.quizAnswers, ...quizAnswers };
     await user.save();
 
