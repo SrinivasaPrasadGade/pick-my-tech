@@ -6,7 +6,7 @@ const News = require('../models/News');
 const Community = require('../models/Community');
 
 // Enhanced rule-based chatbot
-const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Enhanced rule-based chatbot
 const getChatbotResponse = async (message, userId) => {
@@ -211,17 +211,28 @@ const getChatbotResponse = async (message, userId) => {
     };
   }
 
-  // 8. LLM Fallback (Hugging Face)
-  console.log('Attempting LLM Fallback...');
+  // 8. LLM Fallback (Google Gemini)
   try {
-    if (process.env.HUGGINGFACE_API_KEY && !process.env.HUGGINGFACE_API_KEY.includes('PLACEHOLDER')) {
-      console.log('HUGGINGFACE_API_KEY is valid, calling LLM...');
-      const queryHF = async (retryCount = 0) => {
-        try {
-          const response = await axios.post(
-            'https://api-inference.huggingface.co/models/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B',
-            {
-              inputs: `<|user|>\nYou are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully.\nQuestion: ${message}<|end|>\n<|assistant|>\n`,
+    if (process.env.GEMINI_API_KEY) {
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `You are Maverick, a helpful tech assistant for PickMyTech. Answer the following question concisely and helpfully.\n\nQuestion: ${message}`;
+
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+
+      if (text) {
+        return {
+          response: text.trim(),
+          suggestions: ['Ask another question', 'Find devices', 'Home']
+        };
+      }
+    }
+  } catch (error) {
+    console.error('Gemini Error:', error.message);
+    // Fall through to default response
+  }<| user |>\nYou are Maverick, a helpful tech assistant for PickMyTech.Answer the following question concisely and helpfully.\nQuestion: ${ message }<| end |>\n <| assistant |>\n`,
               parameters: {
                 max_new_tokens: 200,
                 temperature: 0.7,
@@ -230,7 +241,7 @@ const getChatbotResponse = async (message, userId) => {
             },
             {
               headers: {
-                'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                'Authorization': `Bearer ${ process.env.HUGGINGFACE_API_KEY } `,
                 'Content-Type': 'application/json'
               }
             }
@@ -241,7 +252,7 @@ const getChatbotResponse = async (message, userId) => {
           if (err.response && err.response.status === 503 && err.response.data && err.response.data.error && err.response.data.error.includes('loading')) {
             if (retryCount < 3) {
               const waitTime = (err.response.data.estimated_time || 5) * 1000;
-              console.log(`Model loading, waiting ${waitTime}ms...`);
+              console.log(`Model loading, waiting ${ waitTime }ms...`);
               await new Promise(resolve => setTimeout(resolve, waitTime));
               return queryHF(retryCount + 1);
             }
