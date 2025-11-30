@@ -10,194 +10,103 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Enhanced rule-based chatbot
 const getChatbotResponse = async (message, userId) => {
-  const lowerMessage = message.toLowerCase().trim();
+  const lowerMessage = message.toLowerCase();
 
-  // 1. Navigation & Help
-  if (lowerMessage.includes('help') || lowerMessage === '?' || lowerMessage === 'menu') {
-    return {
-      response: "I'm Maverick, your AI tech assistant! 🤖\n\nI can help you with:\n📱 **Finding Devices**: 'Find me a phone'\n🆚 **Comparisons**: 'Compare iPhone 15 and Samsung S24'\n📰 **Tech News**: 'Latest tech news'\n⭐ **Recommendations**: 'Suggest a laptop for coding'\n🔍 **Specific Details**: 'Tell me about Pixel 8 Pro'\n\nWhat's on your mind?",
-      suggestions: ['Find a phone', 'Compare devices', 'Latest news', 'Suggest a laptop']
-    };
-  }
-
-  // Navigation commands
+  // 1. Navigation Commands
   if (lowerMessage.includes('go to') || lowerMessage.includes('navigate to') || lowerMessage.includes('open')) {
-    if (lowerMessage.includes('compare')) {
-      return {
-        response: "Navigating to the Compare page...",
-        action: 'navigate',
-        data: { path: '/compare' },
-        suggestions: ['Find devices', 'Home']
-      };
-    }
-    if (lowerMessage.includes('news')) {
-      return {
-        response: "Taking you to Tech News...",
-        action: 'navigate',
-        data: { path: '/news' },
-        suggestions: ['Home', 'Find devices']
-      };
-    }
-    if (lowerMessage.includes('community') || lowerMessage.includes('forum')) {
-      return {
-        response: "Opening Community section...",
-        action: 'navigate',
-        data: { path: '/community' },
-        suggestions: ['Home', 'Write a post']
-      };
-    }
-    if (lowerMessage.includes('recommend')) {
-      return {
-        response: "Going to Recommendations...",
-        action: 'navigate',
-        data: { path: '/recommendations' },
-        suggestions: ['Home', 'Find devices']
-      };
-    }
+    if (lowerMessage.includes('home')) return { action: 'navigate', path: '/', response: "Taking you to the home page." };
+    if (lowerMessage.includes('device') || lowerMessage.includes('phone') || lowerMessage.includes('laptop')) return { action: 'navigate', path: '/devices', response: "Here are the devices." };
+    if (lowerMessage.includes('news')) return { action: 'navigate', path: '/news', response: "Opening tech news." };
+    if (lowerMessage.includes('community') || lowerMessage.includes('forum')) return { action: 'navigate', path: '/community', response: "Going to the community section." };
+    if (lowerMessage.includes('compare')) return { action: 'navigate', path: '/compare', response: "Opening comparison tool." };
+    if (lowerMessage.includes('recommend')) return { action: 'navigate', path: '/recommendations', response: "Let's find some recommendations." };
   }
 
-  // Website Info
+  // 2. Website Information
   if (lowerMessage.includes('what is this website') || lowerMessage.includes('about this app') || lowerMessage.includes('who are you')) {
     return {
-      response: "I'm Maverick, and this is **PickMyTech**! 🚀\n\nWe help you find the perfect tech gadgets. You can:\n- **Browse & Filter** devices by specs and price.\n- **Compare** up to 3 devices side-by-side.\n- **Get Recommendations** based on your needs.\n- **Read Tech News** and join our **Community** discussions.",
-      suggestions: ['Find a phone', 'Compare devices', 'Latest news']
+      response: "I'm Maverick, your AI assistant for PickMyTech! 🚀\n\nThis platform helps you:\n- Find the best gadgets based on your needs\n- Compare devices side-by-side\n- Read the latest tech news\n- Join community discussions\n\nHow can I help you today?",
+      suggestions: ['Find a phone', 'Latest news', 'Compare devices']
     };
   }
 
-  // 2. Compare Devices (Smart Comparison)
-  if (lowerMessage.includes('compare') || lowerMessage.includes('vs') || lowerMessage.includes('versus')) {
-    // Try to extract two device names
-    const parts = lowerMessage.split(/compare|vs|versus|and/i).filter(p => p.trim().length > 2);
+  // 3. Smart Device Search (Category + Budget + Brand)
+  if (lowerMessage.includes('find') || lowerMessage.includes('show') || lowerMessage.includes('search') || lowerMessage.includes('looking for') || lowerMessage.includes('recommend') || lowerMessage.includes('buy')) {
+    let category = '';
+    if (lowerMessage.includes('phone') || lowerMessage.includes('mobile')) category = 'mobile';
+    if (lowerMessage.includes('laptop')) category = 'laptop';
+    if (lowerMessage.includes('tablet')) category = 'tablet';
+    if (lowerMessage.includes('watch')) category = 'smartwatch';
+    if (lowerMessage.includes('headphone') || lowerMessage.includes('earbud')) category = 'headphone';
 
-    if (parts.length >= 2) {
+    // Extract budget if present (e.g., "under 50000")
+    const budgetMatch = lowerMessage.match(/under\s+(\d+)/);
+    const budget = budgetMatch ? parseInt(budgetMatch[1]) : null;
+
+    // Extract brand if present
+    const brands = ['apple', 'samsung', 'dell', 'hp', 'lenovo', 'asus', 'xiaomi', 'oneplus', 'google', 'sony'];
+    const brand = brands.find(b => lowerMessage.includes(b));
+
+    let queryParams = new URLSearchParams();
+    if (category) queryParams.append('category', category);
+    if (budget) queryParams.append('maxPrice', budget);
+    if (brand) queryParams.append('brand', brand);
+
+    // If no specific criteria found but intent is search, default to devices page
+    if (!category && !budget && !brand) {
       return {
-        response: "I can help you compare those! To see a detailed side-by-side comparison of specifications, features, and pricing, please use our dedicated Comparison tool.",
-        action: 'navigate',
-        data: { path: '/compare' },
-        suggestions: ['Go to Compare', 'Find phones', 'Help']
+        response: "Sure! I can help you find devices. What are you looking for? (e.g., 'Find gaming laptops' or 'Show Samsung phones')",
+        suggestions: ['Find phones', 'Find laptops', 'Best tablets']
       };
     }
 
     return {
-      response: "I can help you compare devices! 🆚\n\nGo to the **Compare Page** to select up to 3 devices and see their specs side-by-side. You can also ask me specific questions like 'Is iPhone 15 better than S24?'.",
       action: 'navigate',
-      data: { path: '/compare' },
-      suggestions: ['Go to Compare', 'Best camera phone', 'Battery life leaders']
+      path: `/devices?${queryParams.toString()}`,
+      response: `Here are some ${brand || ''} ${category || 'devices'} ${budget ? 'under ₹' + budget : ''} for you!`
     };
   }
 
-  // 3. Specific Device Details (Enhanced)
-  if (lowerMessage.includes('tell me about') || lowerMessage.includes('specs of') || lowerMessage.includes('details of') || lowerMessage.includes('info on')) {
-    const deviceName = lowerMessage.replace(/tell me about|specs of|details of|info on/gi, '').trim();
-    if (deviceName.length > 1) {
-      try {
-        const device = await Device.findOne({
-          name: { $regex: deviceName, $options: 'i' }
-        });
-
-        if (device) {
-          const price = device.prices && device.prices.length > 0
-            ? `$${Math.min(...device.prices.map(p => p.price)).toLocaleString()}`
-            : 'Price unavailable';
-
-          const specs = device.specifications || {};
-          const processor = specs.processor?.name || 'N/A';
-          const ram = specs.memory?.ram || 'N/A';
-          const battery = specs.battery?.capacity || 'N/A';
-
-          return {
-            response: `📱 **${device.name}**\n\n${device.description.substring(0, 150)}...\n\n**Key Specs:**\n⚙️ Processor: ${processor}\n💾 RAM: ${ram}\n🔋 Battery: ${battery}\n💰 Starting at: ${price}\n\nWould you like to see the full details?`,
-            action: 'navigate',
-            data: { path: `/devices/${device._id}` },
-            suggestions: ['View full details', 'Compare this', 'Find similar']
-          };
-        }
-      } catch (error) {
-        console.error('Error finding device:', error);
-      }
-    }
+  // 4. Specific Device Details
+  if (lowerMessage.includes('specs') || lowerMessage.includes('details') || lowerMessage.includes('price of')) {
+    // This would ideally require a search to get the ID, for now redirect to search
+    return {
+      action: 'navigate',
+      path: '/devices',
+      response: "Please search for the device in the devices section to see full details.",
+      suggestions: ['Go to Devices']
+    };
   }
 
-  // 4. Tech News (Database Integrated)
-  if (lowerMessage.includes('news') || lowerMessage.includes('latest') || lowerMessage.includes('headlines')) {
+  // 5. News & Updates
+  if (lowerMessage.includes('news') || lowerMessage.includes('update') || lowerMessage.includes('latest')) {
     try {
-      const news = await News.find().sort({ publishedAt: -1 }).limit(3);
-      if (news.length > 0) {
-        const newsList = news.map(n => `📰 **${n.title}**`).join('\n');
+      const latestNews = await News.find().sort({ publishedAt: -1 }).limit(3);
+      if (latestNews.length > 0) {
+        const newsLinks = latestNews.map(n => `- [${n.title}](/news)`);
         return {
-          response: `Here are the latest tech headlines:\n\n${newsList}\n\nCheck out the News section for more!`,
-          action: 'navigate',
-          data: { path: '/news' },
-          suggestions: ['Read more news', 'Find devices', 'Home']
+          response: "Here are the latest tech headlines:\n" + newsLinks.join('\n'),
+          suggestions: ['Read more news', 'Home']
         };
       }
-    } catch (error) {
-      console.error('Error fetching news:', error);
+    } catch (err) {
+      console.error('News fetch error:', err);
     }
-
-    return {
-      response: "I can show you the latest tech news! Check out our News section for updates.",
-      action: 'navigate',
-      data: { path: '/news' },
-      suggestions: ['Go to News', 'Home']
-    };
+    return { action: 'navigate', path: '/news', response: "Checking the latest tech news for you..." };
   }
 
-  // 5. Community/Discussions
-  if (lowerMessage.includes('community') || lowerMessage.includes('discussion') || lowerMessage.includes('forum') || lowerMessage.includes('people say')) {
+  // 6. Comparison
+  if (lowerMessage.includes('compare') || lowerMessage.includes('difference')) {
     return {
-      response: "Join the conversation! 🗣️\n\nOur Community is buzzing with discussions. You can read reviews, ask questions, and share your tech setup.",
       action: 'navigate',
-      data: { path: '/community' },
-      suggestions: ['Go to Community', 'Write a post', 'Home']
-    };
-  }
-
-  // 6. Smart Device Search (Category + Budget + Brand)
-  if (lowerMessage.includes('find') || lowerMessage.includes('show') || lowerMessage.includes('search') || lowerMessage.includes('looking for') || lowerMessage.includes('recommend') || lowerMessage.includes('buy')) {
-    let category = '';
-    let brand = null;
-    let maxPrice = null;
-
-    // Detect Category
-    if (lowerMessage.match(/laptop|notebook|macbook/)) category = 'laptop';
-    else if (lowerMessage.match(/tablet|ipad/)) category = 'tablet';
-    else if (lowerMessage.match(/watch|smartwatch/)) category = 'smartwatch';
-    else if (lowerMessage.match(/headphone|earbud|airpod/)) category = 'headphones';
-    else if (lowerMessage.match(/camera|dslr/)) category = 'camera';
-    else if (lowerMessage.match(/phone|mobile|iphone|android/)) category = 'mobile';
-
-    // Detect Brand
-    const brands = ['apple', 'samsung', 'google', 'dell', 'hp', 'lenovo', 'asus', 'sony', 'nothing', 'xiaomi', 'oneplus'];
-    for (const b of brands) {
-      if (lowerMessage.includes(b)) {
-        brand = b.charAt(0).toUpperCase() + b.slice(1);
-        break;
-      }
-    }
-
-    // Detect Price (e.g., "under 1000", "below $500")
-    const priceMatch = lowerMessage.match(/(?:under|below|less than)\s?\$?(\d+)/);
-    if (priceMatch) {
-      maxPrice = parseInt(priceMatch[1]);
-    }
-
-    let responseText = `I've set up a search for you`;
-    if (category) responseText += ` for **${category}s**`;
-    if (brand) responseText += ` by **${brand}**`;
-    if (maxPrice) responseText += ` under **$${maxPrice}**`;
-    responseText += ". Here's what I found!";
-
-    return {
-      response: responseText,
-      action: 'search',
-      data: { category, brand, maxPrice },
-      suggestions: [`Show ${category || 'devices'}`, 'Refine search', 'Home']
+      path: '/compare',
+      response: "You can compare up to 3 devices side-by-side in our comparison tool.",
+      suggestions: ['Go to Compare']
     };
   }
 
   // 7. Greetings & Small Talk
-  if (lowerMessage.match(/^(hi|hello|hey|yo|greetings)/)) {
+  if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
     return {
       response: "Hello! 👋 I'm Maverick. I can help you find the perfect gadget, compare specs, or catch up on tech news. How can I help you today?",
       suggestions: ['Find a phone', 'Suggest a laptop', 'Latest news']
@@ -232,50 +141,6 @@ const getChatbotResponse = async (message, userId) => {
   } catch (error) {
     console.error('Gemini Error:', error.message);
     // Fall through to default response
-  }<| user |>\nYou are Maverick, a helpful tech assistant for PickMyTech.Answer the following question concisely and helpfully.\nQuestion: ${ message }<| end |>\n <| assistant |>\n`,
-              parameters: {
-                max_new_tokens: 200,
-                temperature: 0.7,
-                return_full_text: false
-              }
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${ process.env.HUGGINGFACE_API_KEY } `,
-                'Content-Type': 'application/json'
-              }
-            }
-          );
-          return response.data;
-        } catch (err) {
-          // Handle Model Loading (503)
-          if (err.response && err.response.status === 503 && err.response.data && err.response.data.error && err.response.data.error.includes('loading')) {
-            if (retryCount < 3) {
-              const waitTime = (err.response.data.estimated_time || 5) * 1000;
-              console.log(`Model loading, waiting ${ waitTime }ms...`);
-              await new Promise(resolve => setTimeout(resolve, waitTime));
-              return queryHF(retryCount + 1);
-            }
-          }
-          throw err;
-        }
-      };
-
-      const data = await queryHF();
-
-      if (data && data[0] && data[0].generated_text) {
-        return {
-          response: data[0].generated_text.trim(),
-          suggestions: ['Ask another question', 'Find devices', 'Home']
-        };
-      }
-    }
-  } catch (error) {
-    console.error('LLM Error:', error.message);
-    if (error.response) {
-      console.error('LLM Response Data:', error.response.data);
-    }
-    // Fall through to default response
   }
 
   // Default Fallback
@@ -308,4 +173,3 @@ router.post('/', optional, async (req, res) => {
 });
 
 module.exports = router;
-
