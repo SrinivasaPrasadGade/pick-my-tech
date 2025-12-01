@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,7 +6,7 @@ import {
   FaArrowRight, FaArrowLeft, FaCheck, FaLaptop, FaMobileAlt,
   FaTabletAlt, FaHeadphones, FaGamepad, FaBriefcase, FaGraduationCap,
   FaPlane, FaRunning, FaCamera, FaPalette, FaBatteryFull, FaMicrochip,
-  FaMemory, FaHdd, FaDollarSign, FaLeaf, FaRobot, FaLayerGroup
+  FaHdd, FaLeaf, FaRobot, FaLayerGroup
 } from 'react-icons/fa';
 import './Quiz.css';
 
@@ -219,7 +219,6 @@ const Quiz = () => {
   ];
 
   const handleAnswer = (questionId, value) => {
-    const currentQ = questions[currentStep];
 
     setAnswers(prev => {
       // Determine which section this question belongs to for the nested structure
