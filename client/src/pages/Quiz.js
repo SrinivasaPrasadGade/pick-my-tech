@@ -7,7 +7,7 @@ import {
   FaTabletAlt, FaHeadphones, FaGamepad, FaBriefcase, FaGraduationCap,
   FaPlane, FaRunning, FaCamera, FaPalette, FaBatteryFull, FaMicrochip,
   FaHdd, FaLeaf, FaRobot, FaLayerGroup, FaDollarSign, FaBalanceScale,
-  FaGem, FaHourglassHalf, FaTools, FaExclamationTriangle
+  FaGem, FaHourglassHalf, FaTools, FaExclamationTriangle, FaRocket
 } from 'react-icons/fa';
 import './Quiz.css';
 
@@ -237,8 +237,7 @@ const questions = [
   }
 ];
 
-// Placeholder for missing icons in options
-const FaRocket = FaPlane; // Fallback
+
 
 const QuizContent = () => {
   const navigate = useNavigate();
