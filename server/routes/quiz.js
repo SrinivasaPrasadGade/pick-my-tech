@@ -21,6 +21,7 @@ router.post('/', protect, async (req, res) => {
       quizAnswers: user.quizAnswers
     });
   } catch (error) {
+    console.error('Quiz Submission Error:', error);
     res.status(500).json({
       success: false,
       message: error.message
