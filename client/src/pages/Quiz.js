@@ -10,6 +10,201 @@ import {
 } from 'react-icons/fa';
 import './Quiz.css';
 
+// Questions Data Structure - Moved outside component to prevent re-creation
+const questions = [
+  // Section 1: The Basics & Lifestyle
+  {
+    section: "The Basics & Lifestyle",
+    id: 'lifestyle_type',
+    question: "Welcome! To get started, how would you describe your primary daily grind?",
+    type: 'single-card',
+    options: [
+      { value: 'student', label: 'Student', icon: <FaGraduationCap />, desc: "Juggling classes & assignments" },
+      { value: 'creative', label: 'Creative Pro', icon: <FaPalette />, desc: "Designing, editing, creating" },
+      { value: 'corporate', label: 'Corporate/Office', icon: <FaBriefcase />, desc: "Meetings, emails, workflows" },
+      { value: 'remote', label: 'Remote Worker', icon: <FaLaptop />, desc: "Working from anywhere" },
+      { value: 'gamer', label: 'Gamer/Enthusiast', icon: <FaGamepad />, desc: "Living on the bleeding edge" },
+      { value: 'casual', label: 'Casual User', icon: <FaMobileAlt />, desc: "Simple and reliable" }
+    ]
+  },
+  {
+    section: "The Basics & Lifestyle",
+    id: 'mobility',
+    question: "How does your day usually look regarding movement?",
+    type: 'slider-select',
+    options: [
+      { value: 'stationary', label: 'Stationary', desc: "Mostly at a desk/home" },
+      { value: 'commuter', label: 'Commuter', desc: "Daily travel to work/school" },
+      { value: 'nomad', label: 'Digital Nomad', desc: "Always moving, frequent travel" },
+      { value: 'active', label: 'Active', desc: "Gym, outdoors, on the go" }
+    ]
+  },
+  {
+    section: "The Basics & Lifestyle",
+    id: 'downtime',
+    question: "When you're not working, what's your go-to downtime activity?",
+    type: 'multi-card',
+    maxSelections: 3,
+    options: [
+      { value: 'streaming', label: 'Streaming', icon: <FaMobileAlt /> },
+      { value: 'gaming', label: 'Gaming', icon: <FaGamepad /> },
+      { value: 'reading', label: 'Reading', icon: <FaLaptop /> },
+      { value: 'creative', label: 'Creative', icon: <FaPalette /> },
+      { value: 'fitness', label: 'Fitness', icon: <FaRunning /> },
+      { value: 'social', label: 'Social', icon: <FaLayerGroup /> }
+    ]
+  },
+
+  // Section 2: Usage & Habits
+  {
+    section: "Usage & Habits",
+    id: 'workflow',
+    question: "Which of these sounds most like your digital workflow?",
+    type: 'single-text',
+    options: [
+      { value: 'focus', label: 'Focus Mode', desc: "I do one thing at a time, deeply." },
+      { value: 'multitasker', label: 'Multitasker', desc: "50 tabs open and 3 apps running." },
+      { value: 'creator', label: 'Creator', desc: "Constantly editing, rendering, compiling." },
+      { value: 'consumer', label: 'Consumer', desc: "Mostly watch, read, and listen." }
+    ]
+  },
+  {
+    section: "Usage & Habits",
+    id: 'usage_time',
+    question: "How much time do you spend on your primary device daily?",
+    type: 'slider-range',
+    min: 1,
+    max: 12,
+    unit: 'hours'
+  },
+  {
+    section: "Usage & Habits",
+    id: 'creation_ratio',
+    question: "Content Creation vs. Consumption Ratio?",
+    type: 'slider-balance',
+    leftLabel: "Consumption",
+    rightLabel: "Creation"
+  },
+
+  // Section 3: Current Tech Ecosystem
+  {
+    section: "Current Tech Ecosystem",
+    id: 'ecosystem',
+    question: "Which ecosystem feels like 'home' to you right now?",
+    type: 'single-card',
+    options: [
+      { value: 'apple', label: 'Apple Garden', icon: <FaMobileAlt />, desc: "iMessage, iCloud, iPhone" },
+      { value: 'google', label: 'Google/Android', icon: <FaRobot />, desc: "Workspace, Android, Assistant" },
+      { value: 'windows', label: 'Windows', icon: <FaLaptop />, desc: "Office 365, PC Gaming" },
+      { value: 'mixed', label: 'Mixed/Agnostic', icon: <FaLayerGroup />, desc: "Best tool for the job" }
+    ]
+  },
+  {
+    section: "Current Tech Ecosystem",
+    id: 'devices_owned',
+    question: "What devices do you currently own and use regularly?",
+    type: 'multi-card',
+    options: [
+      { value: 'smartphone', label: 'Smartphone', icon: <FaMobileAlt /> },
+      { value: 'laptop', label: 'Laptop', icon: <FaLaptop /> },
+      { value: 'tablet', label: 'Tablet', icon: <FaTabletAlt /> },
+      { value: 'smartwatch', label: 'Smartwatch', icon: <FaRunning /> },
+      { value: 'earbuds', label: 'Earbuds', icon: <FaHeadphones /> },
+      { value: 'pc', label: 'Desktop PC', icon: <FaHdd /> },
+      { value: 'console', label: 'Console', icon: <FaGamepad /> }
+    ]
+  },
+  {
+    section: "Current Tech Ecosystem",
+    id: 'tech_savviness',
+    question: "How tech-savvy would you say you are?",
+    type: 'single-text',
+    options: [
+      { value: 'novice', label: 'Novice', desc: "I need help setting up Wi-Fi." },
+      { value: 'average', label: 'Average', desc: "I can troubleshoot basic issues." },
+      { value: 'expert', label: 'Expert', desc: "I build PCs / root phones." }
+    ]
+  },
+
+  // Section 4: Preferences & Priorities
+  {
+    section: "Preferences & Priorities",
+    id: 'budget_style',
+    question: "When buying new tech, what's your budget philosophy?",
+    type: 'single-text',
+    options: [
+      { value: 'value', label: 'Value Hunter', desc: "Best bang for the buck." },
+      { value: 'balanced', label: 'Balanced', desc: "Quality without luxury markup." },
+      { value: 'premium', label: 'Premium', desc: "Best experience, price secondary." },
+      { value: 'future', label: 'Future-Proofer', desc: "Spend more now to last longer." }
+    ]
+  },
+  {
+    section: "Preferences & Priorities",
+    id: 'priorities',
+    question: "Rank these features in order of importance (Tap to select in order)",
+    type: 'ranking',
+    options: [
+      { value: 'performance', label: 'Performance', icon: <FaMicrochip /> },
+      { value: 'battery', label: 'Battery Life', icon: <FaBatteryFull /> },
+      { value: 'camera', label: 'Camera', icon: <FaCamera /> },
+      { value: 'display', label: 'Display', icon: <FaMobileAlt /> },
+      { value: 'portability', label: 'Portability', icon: <FaPlane /> },
+      { value: 'durability', label: 'Durability', icon: <FaHdd /> }
+    ]
+  },
+  {
+    section: "Preferences & Priorities",
+    id: 'brand_loyalty',
+    question: "Are you open to trying new brands?",
+    type: 'single-text',
+    options: [
+      { value: 'loyalist', label: 'Loyalist', desc: "I stick to trusted brands." },
+      { value: 'open', label: 'Open-Minded', desc: "Willing to switch for better products." },
+      { value: 'adventurous', label: 'Adventurous', desc: "Love trying new/niche brands." }
+    ]
+  },
+
+  // Section 5: Pain Points & Future
+  {
+    section: "Pain Points & Future",
+    id: 'frustration',
+    question: "What is the biggest frustration with your CURRENT device?",
+    type: 'single-text',
+    options: [
+      { value: 'battery', label: 'Battery dies too fast' },
+      { value: 'performance', label: 'Slow / Laggy' },
+      { value: 'storage', label: 'Storage full' },
+      { value: 'camera', label: 'Bad photos' },
+      { value: 'damage', label: 'Screen cracked / Broken' },
+      { value: 'upgrade', label: 'Just want an upgrade' }
+    ]
+  },
+  {
+    section: "Pain Points & Future",
+    id: 'upgrade_cycle',
+    question: "How long do you typically keep a device?",
+    type: 'single-text',
+    options: [
+      { value: '1-2', label: '1-2 Years' },
+      { value: '3-4', label: '3-4 Years' },
+      { value: '5+', label: '5+ Years' }
+    ]
+  },
+  {
+    section: "Pain Points & Future",
+    id: 'emerging_tech',
+    question: "Are you interested in emerging technologies?",
+    type: 'multi-card',
+    options: [
+      { value: 'foldable', label: 'Foldables', icon: <FaMobileAlt /> },
+      { value: 'ai', label: 'AI Features', icon: <FaRobot /> },
+      { value: 'vr', label: 'AR/VR', icon: <FaHeadphones /> },
+      { value: 'eco', label: 'Eco-Friendly', icon: <FaLeaf /> }
+    ]
+  }
+];
+
 const Quiz = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
@@ -23,210 +218,8 @@ const Quiz = () => {
     future: {}
   });
 
-  // Questions Data Structure
-  const questions = [
-    // Section 1: The Basics & Lifestyle
-    {
-      section: "The Basics & Lifestyle",
-      id: 'lifestyle_type',
-      question: "Welcome! To get started, how would you describe your primary daily grind?",
-      type: 'single-card',
-      options: [
-        { value: 'student', label: 'Student', icon: <FaGraduationCap />, desc: "Juggling classes & assignments" },
-        { value: 'creative', label: 'Creative Pro', icon: <FaPalette />, desc: "Designing, editing, creating" },
-        { value: 'corporate', label: 'Corporate/Office', icon: <FaBriefcase />, desc: "Meetings, emails, workflows" },
-        { value: 'remote', label: 'Remote Worker', icon: <FaLaptop />, desc: "Working from anywhere" },
-        { value: 'gamer', label: 'Gamer/Enthusiast', icon: <FaGamepad />, desc: "Living on the bleeding edge" },
-        { value: 'casual', label: 'Casual User', icon: <FaMobileAlt />, desc: "Simple and reliable" }
-      ]
-    },
-    {
-      section: "The Basics & Lifestyle",
-      id: 'mobility',
-      question: "How does your day usually look regarding movement?",
-      type: 'slider-select',
-      options: [
-        { value: 'stationary', label: 'Stationary', desc: "Mostly at a desk/home" },
-        { value: 'commuter', label: 'Commuter', desc: "Daily travel to work/school" },
-        { value: 'nomad', label: 'Digital Nomad', desc: "Always moving, frequent travel" },
-        { value: 'active', label: 'Active', desc: "Gym, outdoors, on the go" }
-      ]
-    },
-    {
-      section: "The Basics & Lifestyle",
-      id: 'downtime',
-      question: "When you're not working, what's your go-to downtime activity?",
-      type: 'multi-card',
-      maxSelections: 3,
-      options: [
-        { value: 'streaming', label: 'Streaming', icon: <FaMobileAlt /> },
-        { value: 'gaming', label: 'Gaming', icon: <FaGamepad /> },
-        { value: 'reading', label: 'Reading', icon: <FaLaptop /> },
-        { value: 'creative', label: 'Creative', icon: <FaPalette /> },
-        { value: 'fitness', label: 'Fitness', icon: <FaRunning /> },
-        { value: 'social', label: 'Social', icon: <FaLayerGroup /> }
-      ]
-    },
-
-    // Section 2: Usage & Habits
-    {
-      section: "Usage & Habits",
-      id: 'workflow',
-      question: "Which of these sounds most like your digital workflow?",
-      type: 'single-text',
-      options: [
-        { value: 'focus', label: 'Focus Mode', desc: "I do one thing at a time, deeply." },
-        { value: 'multitasker', label: 'Multitasker', desc: "50 tabs open and 3 apps running." },
-        { value: 'creator', label: 'Creator', desc: "Constantly editing, rendering, compiling." },
-        { value: 'consumer', label: 'Consumer', desc: "Mostly watch, read, and listen." }
-      ]
-    },
-    {
-      section: "Usage & Habits",
-      id: 'usage_time',
-      question: "How much time do you spend on your primary device daily?",
-      type: 'slider-range',
-      min: 1,
-      max: 12,
-      unit: 'hours'
-    },
-    {
-      section: "Usage & Habits",
-      id: 'creation_ratio',
-      question: "Content Creation vs. Consumption Ratio?",
-      type: 'slider-balance',
-      leftLabel: "Consumption",
-      rightLabel: "Creation"
-    },
-
-    // Section 3: Current Tech Ecosystem
-    {
-      section: "Current Tech Ecosystem",
-      id: 'ecosystem',
-      question: "Which ecosystem feels like 'home' to you right now?",
-      type: 'single-card',
-      options: [
-        { value: 'apple', label: 'Apple Garden', icon: <FaMobileAlt />, desc: "iMessage, iCloud, iPhone" },
-        { value: 'google', label: 'Google/Android', icon: <FaRobot />, desc: "Workspace, Android, Assistant" },
-        { value: 'windows', label: 'Windows', icon: <FaLaptop />, desc: "Office 365, PC Gaming" },
-        { value: 'mixed', label: 'Mixed/Agnostic', icon: <FaLayerGroup />, desc: "Best tool for the job" }
-      ]
-    },
-    {
-      section: "Current Tech Ecosystem",
-      id: 'devices_owned',
-      question: "What devices do you currently own and use regularly?",
-      type: 'multi-card',
-      options: [
-        { value: 'smartphone', label: 'Smartphone', icon: <FaMobileAlt /> },
-        { value: 'laptop', label: 'Laptop', icon: <FaLaptop /> },
-        { value: 'tablet', label: 'Tablet', icon: <FaTabletAlt /> },
-        { value: 'smartwatch', label: 'Smartwatch', icon: <FaRunning /> },
-        { value: 'earbuds', label: 'Earbuds', icon: <FaHeadphones /> },
-        { value: 'pc', label: 'Desktop PC', icon: <FaHdd /> },
-        { value: 'console', label: 'Console', icon: <FaGamepad /> }
-      ]
-    },
-    {
-      section: "Current Tech Ecosystem",
-      id: 'tech_savviness',
-      question: "How tech-savvy would you say you are?",
-      type: 'single-text',
-      options: [
-        { value: 'novice', label: 'Novice', desc: "I need help setting up Wi-Fi." },
-        { value: 'average', label: 'Average', desc: "I can troubleshoot basic issues." },
-        { value: 'expert', label: 'Expert', desc: "I build PCs / root phones." }
-      ]
-    },
-
-    // Section 4: Preferences & Priorities
-    {
-      section: "Preferences & Priorities",
-      id: 'budget_style',
-      question: "When buying new tech, what's your budget philosophy?",
-      type: 'single-text',
-      options: [
-        { value: 'value', label: 'Value Hunter', desc: "Best bang for the buck." },
-        { value: 'balanced', label: 'Balanced', desc: "Quality without luxury markup." },
-        { value: 'premium', label: 'Premium', desc: "Best experience, price secondary." },
-        { value: 'future', label: 'Future-Proofer', desc: "Spend more now to last longer." }
-      ]
-    },
-    {
-      section: "Preferences & Priorities",
-      id: 'priorities',
-      question: "Rank these features in order of importance (Tap to select in order)",
-      type: 'ranking',
-      options: [
-        { value: 'performance', label: 'Performance', icon: <FaMicrochip /> },
-        { value: 'battery', label: 'Battery Life', icon: <FaBatteryFull /> },
-        { value: 'camera', label: 'Camera', icon: <FaCamera /> },
-        { value: 'display', label: 'Display', icon: <FaMobileAlt /> },
-        { value: 'portability', label: 'Portability', icon: <FaPlane /> },
-        { value: 'durability', label: 'Durability', icon: <FaHdd /> }
-      ]
-    },
-    {
-      section: "Preferences & Priorities",
-      id: 'brand_loyalty',
-      question: "Are you open to trying new brands?",
-      type: 'single-text',
-      options: [
-        { value: 'loyalist', label: 'Loyalist', desc: "I stick to trusted brands." },
-        { value: 'open', label: 'Open-Minded', desc: "Willing to switch for better products." },
-        { value: 'adventurous', label: 'Adventurous', desc: "Love trying new/niche brands." }
-      ]
-    },
-
-    // Section 5: Pain Points & Future
-    {
-      section: "Pain Points & Future",
-      id: 'frustration',
-      question: "What is the biggest frustration with your CURRENT device?",
-      type: 'single-text',
-      options: [
-        { value: 'battery', label: 'Battery dies too fast' },
-        { value: 'performance', label: 'Slow / Laggy' },
-        { value: 'storage', label: 'Storage full' },
-        { value: 'camera', label: 'Bad photos' },
-        { value: 'damage', label: 'Screen cracked / Broken' },
-        { value: 'upgrade', label: 'Just want an upgrade' }
-      ]
-    },
-    {
-      section: "Pain Points & Future",
-      id: 'upgrade_cycle',
-      question: "How long do you typically keep a device?",
-      type: 'single-text',
-      options: [
-        { value: '1-2', label: '1-2 Years' },
-        { value: '3-4', label: '3-4 Years' },
-        { value: '5+', label: '5+ Years' }
-      ]
-    },
-    {
-      section: "Pain Points & Future",
-      id: 'emerging_tech',
-      question: "Are you interested in emerging technologies?",
-      type: 'multi-card',
-      options: [
-        { value: 'foldable', label: 'Foldables', icon: <FaMobileAlt /> },
-        { value: 'ai', label: 'AI Features', icon: <FaRobot /> },
-        { value: 'vr', label: 'AR/VR', icon: <FaHeadphones /> },
-        { value: 'eco', label: 'Eco-Friendly', icon: <FaLeaf /> }
-      ]
-    }
-  ];
-
   const handleAnswer = (questionId, value) => {
-
     setAnswers(prev => {
-      // Determine which section this question belongs to for the nested structure
-      // For simplicity in this implementation, we'll flatten the update logic 
-      // but keep the state structure if needed, or just use a flat key-value for now 
-      // and restructure before submit.
-      // Let's use a flat structure for the 'answers' state for easier binding, 
-      // and map it to the complex structure on submit.
       return { ...prev, [questionId]: value };
     });
   };
@@ -270,9 +263,6 @@ const Quiz = () => {
 
   const submitQuiz = async () => {
     try {
-      // Transform flat answers to nested structure if needed by backend or just send as is
-      // The backend model was updated to accept Mixed Object, so we can send the structured object.
-      // Let's restructure it to match the design document's output format
       const structuredAnswers = {
         lifestyle: {
           type: answers.lifestyle_type,
@@ -314,6 +304,8 @@ const Quiz = () => {
 
   // Render helper for different question types
   const renderQuestionContent = () => {
+    if (!currentQ) return null;
+
     switch (currentQ.type) {
       case 'single-card':
       case 'single-text':
@@ -444,7 +436,7 @@ const Quiz = () => {
                     <span className="rank-label">{opt?.label}</span>
                     <button
                       className="remove-rank"
-                      onClick={() => handleRanking(currentQ.id, val)} // Toggle off
+                      onClick={() => handleRanking(currentQ.id, val)}
                     >
                       ✕
                     </button>
@@ -461,11 +453,14 @@ const Quiz = () => {
   };
 
   const canProceed = () => {
+    if (!currentQ) return false;
     const val = answers[currentQ.id];
     if (currentQ.type === 'ranking') return val && val.length > 0;
     if (currentQ.type.includes('multi')) return val && val.length > 0;
     return val !== undefined && val !== null && val !== '';
   };
+
+  if (!currentQ) return <div className="quiz-page">Loading...</div>;
 
   return (
     <div className="quiz-page">
