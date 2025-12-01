@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
   },
   quizAnswers: {
     type: Object,
-    default: {}
+    default: {} // Flexible schema for new quiz structure
   },
   preferences: {
     favoriteDevices: [{
