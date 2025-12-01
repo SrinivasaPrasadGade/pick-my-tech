@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Component } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,11 +6,43 @@ import {
   FaArrowRight, FaArrowLeft, FaCheck, FaLaptop, FaMobileAlt,
   FaTabletAlt, FaHeadphones, FaGamepad, FaBriefcase, FaGraduationCap,
   FaPlane, FaRunning, FaCamera, FaPalette, FaBatteryFull, FaMicrochip,
-  FaHdd, FaLeaf, FaRobot, FaLayerGroup
+  FaHdd, FaLeaf, FaRobot, FaLayerGroup, FaDollarSign, FaBalanceScale,
+  FaGem, FaHourglassHalf, FaTools, FaExclamationTriangle
 } from 'react-icons/fa';
 import './Quiz.css';
 
-// Questions Data Structure - Moved outside component to prevent re-creation
+// Error Boundary Component to catch render errors
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Quiz Error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="quiz-error">
+          <h2>Something went wrong.</h2>
+          <p>We encountered an error loading the quiz.</p>
+          <button onClick={() => window.location.reload()} className="btn-retry">
+            Reload Quiz
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// Questions Data Structure
 const questions = [
   // Section 1: The Basics & Lifestyle
   {
@@ -62,10 +94,10 @@ const questions = [
     question: "Which of these sounds most like your digital workflow?",
     type: 'single-text',
     options: [
-      { value: 'focus', label: 'Focus Mode', desc: "I do one thing at a time, deeply." },
-      { value: 'multitasker', label: 'Multitasker', desc: "50 tabs open and 3 apps running." },
-      { value: 'creator', label: 'Creator', desc: "Constantly editing, rendering, compiling." },
-      { value: 'consumer', label: 'Consumer', desc: "Mostly watch, read, and listen." }
+      { value: 'focus', label: 'Focus Mode', desc: "I do one thing at a time, deeply.", icon: <FaLaptop /> },
+      { value: 'multitasker', label: 'Multitasker', desc: "50 tabs open and 3 apps running.", icon: <FaLayerGroup /> },
+      { value: 'creator', label: 'Creator', desc: "Constantly editing, rendering, compiling.", icon: <FaPalette /> },
+      { value: 'consumer', label: 'Consumer', desc: "Mostly watch, read, and listen.", icon: <FaHeadphones /> }
     ]
   },
   {
@@ -120,9 +152,9 @@ const questions = [
     question: "How tech-savvy would you say you are?",
     type: 'single-text',
     options: [
-      { value: 'novice', label: 'Novice', desc: "I need help setting up Wi-Fi." },
-      { value: 'average', label: 'Average', desc: "I can troubleshoot basic issues." },
-      { value: 'expert', label: 'Expert', desc: "I build PCs / root phones." }
+      { value: 'novice', label: 'Novice', desc: "I need help setting up Wi-Fi.", icon: <FaExclamationTriangle /> },
+      { value: 'average', label: 'Average', desc: "I can troubleshoot basic issues.", icon: <FaTools /> },
+      { value: 'expert', label: 'Expert', desc: "I build PCs / root phones.", icon: <FaMicrochip /> }
     ]
   },
 
@@ -133,10 +165,10 @@ const questions = [
     question: "When buying new tech, what's your budget philosophy?",
     type: 'single-text',
     options: [
-      { value: 'value', label: 'Value Hunter', desc: "Best bang for the buck." },
-      { value: 'balanced', label: 'Balanced', desc: "Quality without luxury markup." },
-      { value: 'premium', label: 'Premium', desc: "Best experience, price secondary." },
-      { value: 'future', label: 'Future-Proofer', desc: "Spend more now to last longer." }
+      { value: 'value', label: 'Value Hunter', desc: "Best bang for the buck.", icon: <FaDollarSign /> },
+      { value: 'balanced', label: 'Balanced', desc: "Quality without luxury markup.", icon: <FaBalanceScale /> },
+      { value: 'premium', label: 'Premium', desc: "Best experience, price secondary.", icon: <FaGem /> },
+      { value: 'future', label: 'Future-Proofer', desc: "Spend more now to last longer.", icon: <FaHourglassHalf /> }
     ]
   },
   {
@@ -159,9 +191,9 @@ const questions = [
     question: "Are you open to trying new brands?",
     type: 'single-text',
     options: [
-      { value: 'loyalist', label: 'Loyalist', desc: "I stick to trusted brands." },
-      { value: 'open', label: 'Open-Minded', desc: "Willing to switch for better products." },
-      { value: 'adventurous', label: 'Adventurous', desc: "Love trying new/niche brands." }
+      { value: 'loyalist', label: 'Loyalist', desc: "I stick to trusted brands.", icon: <FaCheck /> },
+      { value: 'open', label: 'Open-Minded', desc: "Willing to switch for better products.", icon: <FaLayerGroup /> },
+      { value: 'adventurous', label: 'Adventurous', desc: "Love trying new/niche brands.", icon: <FaRocket /> }
     ]
   },
 
@@ -172,12 +204,12 @@ const questions = [
     question: "What is the biggest frustration with your CURRENT device?",
     type: 'single-text',
     options: [
-      { value: 'battery', label: 'Battery dies too fast' },
-      { value: 'performance', label: 'Slow / Laggy' },
-      { value: 'storage', label: 'Storage full' },
-      { value: 'camera', label: 'Bad photos' },
-      { value: 'damage', label: 'Screen cracked / Broken' },
-      { value: 'upgrade', label: 'Just want an upgrade' }
+      { value: 'battery', label: 'Battery dies too fast', icon: <FaBatteryFull /> },
+      { value: 'performance', label: 'Slow / Laggy', icon: <FaMicrochip /> },
+      { value: 'storage', label: 'Storage full', icon: <FaHdd /> },
+      { value: 'camera', label: 'Bad photos', icon: <FaCamera /> },
+      { value: 'damage', label: 'Screen cracked / Broken', icon: <FaExclamationTriangle /> },
+      { value: 'upgrade', label: 'Just want an upgrade', icon: <FaGem /> }
     ]
   },
   {
@@ -186,9 +218,9 @@ const questions = [
     question: "How long do you typically keep a device?",
     type: 'single-text',
     options: [
-      { value: '1-2', label: '1-2 Years' },
-      { value: '3-4', label: '3-4 Years' },
-      { value: '5+', label: '5+ Years' }
+      { value: '1-2', label: '1-2 Years', icon: <FaHourglassHalf /> },
+      { value: '3-4', label: '3-4 Years', icon: <FaHourglassHalf /> },
+      { value: '5+', label: '5+ Years', icon: <FaHourglassHalf /> }
     ]
   },
   {
@@ -205,23 +237,16 @@ const questions = [
   }
 ];
 
-const Quiz = () => {
+// Placeholder for missing icons in options
+const FaRocket = FaPlane; // Fallback
+
+const QuizContent = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState({
-    lifestyle: {},
-    usage: {},
-    tech_context: {},
-    priorities: {},
-    budget: {},
-    pain_points: [],
-    future: {}
-  });
+  const [answers, setAnswers] = useState({});
 
   const handleAnswer = (questionId, value) => {
-    setAnswers(prev => {
-      return { ...prev, [questionId]: value };
-    });
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
   const handleMultiSelect = (questionId, value, maxSelections) => {
@@ -300,12 +325,13 @@ const Quiz = () => {
   };
 
   const currentQ = questions[currentStep];
+
+  // Safety check
+  if (!currentQ) return <div className="quiz-loading">Loading question...</div>;
+
   const progress = ((currentStep + 1) / questions.length) * 100;
 
-  // Render helper for different question types
   const renderQuestionContent = () => {
-    if (!currentQ) return null;
-
     switch (currentQ.type) {
       case 'single-card':
       case 'single-text':
@@ -354,7 +380,7 @@ const Quiz = () => {
       case 'slider-select':
         return (
           <div className="slider-select-container">
-            {currentQ.options.map((opt, idx) => (
+            {currentQ.options.map((opt) => (
               <button
                 key={opt.value}
                 className={`slider-option ${answers[currentQ.id] === opt.value ? 'selected' : ''}`}
@@ -448,19 +474,16 @@ const Quiz = () => {
         );
 
       default:
-        return null;
+        return <div>Unknown question type</div>;
     }
   };
 
   const canProceed = () => {
-    if (!currentQ) return false;
     const val = answers[currentQ.id];
     if (currentQ.type === 'ranking') return val && val.length > 0;
     if (currentQ.type.includes('multi')) return val && val.length > 0;
     return val !== undefined && val !== null && val !== '';
   };
-
-  if (!currentQ) return <div className="quiz-page">Loading...</div>;
 
   return (
     <div className="quiz-page">
@@ -517,6 +540,14 @@ const Quiz = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const Quiz = () => {
+  return (
+    <ErrorBoundary>
+      <QuizContent />
+    </ErrorBoundary>
   );
 };
 
