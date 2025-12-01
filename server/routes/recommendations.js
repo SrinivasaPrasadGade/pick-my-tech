@@ -7,109 +7,145 @@ const { protect, optional } = require('../middleware/auth');
 // Advanced recommendation algorithm
 const calculateScore = (device, userAnswers) => {
   let score = 0;
+  const reasons = [];
 
-  // Budget match (weight: 30%)
-  if (userAnswers.budgetRange && device.prices.length > 0) {
-    const avgPrice = device.prices.reduce((sum, p) => sum + p.price, 0) / device.prices.length;
-    const budgetMap = {
-      'under-500': [0, 500],
-      '500-1000': [500, 1000],
-      '1000-2000': [1000, 2000],
-      '2000-3000': [2000, 3000],
-      'above-3000': [3000, Infinity]
-    };
-    const [min, max] = budgetMap[userAnswers.budgetRange] || [0, Infinity];
-    if (avgPrice >= min && avgPrice <= max) {
-      score += 30;
-    } else {
-      const diff = Math.min(Math.abs(avgPrice - min), Math.abs(avgPrice - max));
-      score += Math.max(0, 30 - (diff / 100));
+  // 1. Ecosystem Match (Weight: 20%)
+  const ecosystem = userAnswers.tech_context?.ecosystem;
+  const brand = device.brand.toLowerCase();
+
+  if (ecosystem === 'apple') {
+    if (brand === 'apple') {
+      score += 20;
+      reasons.push("Perfect for your Apple ecosystem");
+    }
+  } else if (ecosystem === 'google' || ecosystem === 'android') {
+    if (brand !== 'apple') {
+      score += 10;
+      if (brand === 'google' || brand === 'samsung') {
+        score += 10;
+        reasons.push("Seamless integration with Google/Android");
+      }
+    }
+  } else if (ecosystem === 'windows') {
+    if (device.category === 'laptop' && brand !== 'apple') {
+      score += 20;
+      reasons.push("Great for your Windows workflow");
     }
   }
 
-  // Brand preference (weight: 15%)
-  if (userAnswers.preferredBrands && userAnswers.preferredBrands.length > 0) {
-    if (userAnswers.preferredBrands.some(b =>
-      device.brand.toLowerCase().includes(b.toLowerCase())
-    )) {
+  // 2. Budget Match (Weight: 25%)
+  const budgetStyle = userAnswers.priorities?.budget_style;
+  const price = device.prices && device.prices.length > 0
+    ? device.prices.reduce((sum, p) => sum + p.price, 0) / device.prices.length
+    : 0;
+
+  if (price > 0) {
+    if (budgetStyle === 'value') {
+      if (price < 600) {
+        score += 25;
+        reasons.push("Fits your value-focused budget");
+      } else if (price < 800) score += 15;
+    } else if (budgetStyle === 'balanced') {
+      if (price >= 500 && price <= 1200) {
+        score += 25;
+        reasons.push("Matches your balanced budget preference");
+      } else if (price < 500 || price < 1500) score += 15;
+    } else if (budgetStyle === 'premium' || budgetStyle === 'future') {
+      if (price > 1000) {
+        score += 25;
+        reasons.push("Premium device with top-tier features");
+      } else score += 15;
+    }
+  }
+
+  // 3. Usage & Lifestyle Match (Weight: 30%)
+  const lifestyle = userAnswers.lifestyle?.type;
+  const workflow = userAnswers.usage?.workflow;
+  const specs = device.specifications || {};
+  const ram = parseInt(specs.memory?.ram) || 0;
+  const storage = parseInt(specs.memory?.storage) || 0;
+  const processor = specs.processor?.name?.toLowerCase() || '';
+
+  // Gamer
+  if (lifestyle === 'gamer' || userAnswers.lifestyle?.downtime?.includes('gaming')) {
+    if (ram >= 12 || processor.includes('snapdragon 8') || processor.includes('pro') || processor.includes('max')) {
       score += 15;
+      reasons.push("Powerhouse performance for gaming");
+    }
+    if (specs.display?.refreshRate?.includes('120') || specs.display?.refreshRate?.includes('144')) {
+      score += 15;
+      reasons.push("High refresh rate display");
     }
   }
 
-  // Usage type match (weight: 25%)
-  if (userAnswers.usageType && userAnswers.usageType.length > 0) {
-    const usageScores = {
-      gaming: () => {
-        const ram = parseInt(device.specifications?.memory?.ram) || 0;
-        const processor = device.specifications?.processor?.name?.toLowerCase() || '';
-        let usageScore = 0;
-        if (ram >= 8) usageScore += 5;
-        if (ram >= 16) usageScore += 5;
-        if (processor.includes('snapdragon') || processor.includes('intel') || processor.includes('amd')) usageScore += 5;
-        return usageScore;
-      },
-      productivity: () => {
-        const ram = parseInt(device.specifications?.memory?.ram) || 0;
-        const storage = parseInt(device.specifications?.memory?.storage) || 0;
-        let usageScore = 0;
-        if (ram >= 8) usageScore += 5;
-        if (storage >= 256) usageScore += 5;
-        return usageScore;
-      },
-      photography: () => {
-        const camera = device.specifications?.camera?.rear || '';
-        let usageScore = 0;
-        if (camera.includes('MP') || camera.includes('megapixel')) usageScore += 10;
-        return usageScore;
-      },
-      video: () => {
-        const camera = device.specifications?.camera?.video || '';
-        const storage = parseInt(device.specifications?.memory?.storage) || 0;
-        let usageScore = 0;
-        if (camera.includes('4K') || camera.includes('8K')) usageScore += 5;
-        if (storage >= 256) usageScore += 5;
-        return usageScore;
-      }
-    };
-
-    userAnswers.usageType.forEach(usage => {
-      const calc = usageScores[usage];
-      if (calc) {
-        score += calc();
-      }
-    });
+  // Creative/Creator
+  if (lifestyle === 'creative' || workflow === 'creator') {
+    if (storage >= 512 || ram >= 16) {
+      score += 15;
+      reasons.push("High storage & RAM for content creation");
+    }
+    if (specs.display?.resolution?.includes('4K') || specs.display?.type?.includes('OLED')) {
+      score += 15;
+      reasons.push("Color-accurate, high-res display");
+    }
   }
 
-  // Priorities match (weight: 20%)
-  if (userAnswers.priorities && userAnswers.priorities.length > 0) {
-    userAnswers.priorities.forEach(priority => {
-      switch (priority) {
-        case 'battery':
-          const battery = parseInt(device.specifications?.battery?.capacity) || 0;
-          if (battery >= 4000) score += 5;
-          break;
-        case 'display':
-          const resolution = device.specifications?.display?.resolution || '';
-          if (resolution.includes('4K') || resolution.includes('1440')) score += 5;
-          break;
-        case 'storage':
-          const storage = parseInt(device.specifications?.memory?.storage) || 0;
-          if (storage >= 256) score += 5;
-          break;
-        case 'performance':
-          const ram = parseInt(device.specifications?.memory?.ram) || 0;
-          if (ram >= 8) score += 5;
-          break;
-      }
-    });
+  // Corporate/Student (Productivity)
+  if (lifestyle === 'student' || lifestyle === 'corporate' || workflow === 'focus') {
+    if (parseInt(specs.battery?.capacity) >= 4500 || specs.battery?.life?.includes('hour')) {
+      score += 15;
+      reasons.push("All-day battery life for work/study");
+    }
+    score += 15; // General productivity boost
   }
 
-  // Device type match (weight: 10%)
-  if (userAnswers.deviceType === device.category) {
-    score += 10;
-  }
+  // 4. Priorities Ranking (Weight: 25%)
+  const rankedPriorities = userAnswers.priorities?.ranked || [];
 
-  return score;
+  rankedPriorities.slice(0, 3).forEach((priority, index) => {
+    const weight = index === 0 ? 15 : (index === 1 ? 7 : 3); // Weighted top 3
+
+    switch (priority) {
+      case 'camera':
+        if (specs.camera?.rear?.includes('MP') || specs.camera?.score > 80) {
+          score += weight;
+          if (index === 0) reasons.push("Top-tier camera system");
+        }
+        break;
+      case 'battery':
+        if (parseInt(specs.battery?.capacity) >= 5000) {
+          score += weight;
+          if (index === 0) reasons.push("Exceptional battery life");
+        }
+        break;
+      case 'performance':
+        if (ram >= 12 || processor.includes('gen 3') || processor.includes('bionic')) {
+          score += weight;
+          if (index === 0) reasons.push("Blazing fast performance");
+        }
+        break;
+      case 'display':
+        if (specs.display?.type?.includes('OLED') || specs.display?.type?.includes('AMOLED')) {
+          score += weight;
+          if (index === 0) reasons.push("Stunning display quality");
+        }
+        break;
+      case 'portability':
+        if (device.category === 'mobile' || (device.weight && parseInt(device.weight) < 1.5)) {
+          score += weight;
+          if (index === 0) reasons.push("Lightweight and portable");
+        }
+        break;
+    }
+  });
+
+  // Cap score at 100
+  score = Math.min(100, score);
+
+  // Ensure at least some score if it's a valid device in the category
+  if (score === 0) score = 40;
+
+  return { score, reasons: [...new Set(reasons)].slice(0, 3) }; // Return unique top 3 reasons
 };
 
 // Get personalized recommendations
@@ -123,22 +159,34 @@ router.post('/', protect, async (req, res) => {
       });
     }
 
-    const category = user.quizAnswers.deviceType || 'mobile';
+    // Determine category from quiz or default to mobile
+    // Note: The quiz doesn't explicitly ask "What device do you want?" in the new design
+    // It infers from context or we can default to showing a mix or specific category if asked.
+    // For now, let's assume we recommend Smartphones as the primary, or infer from 'devices_owned' gaps?
+    // Let's default to 'mobile' for this implementation as it's the most common, 
+    // or check if they expressed interest in something specific.
+    const category = 'mobile';
+
     const devices = await Device.find({ category });
 
-    const scoredDevices = devices.map(device => ({
-      device,
-      score: calculateScore(device, user.quizAnswers)
-    }));
+    const scoredDevices = devices.map(device => {
+      const { score, reasons } = calculateScore(device, user.quizAnswers);
+      return {
+        device,
+        score,
+        reasons
+      };
+    });
 
     scoredDevices.sort((a, b) => b.score - a.score);
 
     res.json({
       success: true,
       recommendations: scoredDevices.slice(0, 10).map(item => item.device),
-      scores: scoredDevices.slice(0, 10)
+      scores: scoredDevices.slice(0, 10).map(item => ({ score: item.score, reasons: item.reasons }))
     });
   } catch (error) {
+    console.error("Recommendation Error:", error);
     res.status(500).json({
       success: false,
       message: error.message

@@ -89,9 +89,13 @@ const Recommendations = () => {
                       <div className="recommendation-reasons">
                         <h4>Why this device?</h4>
                         <ul>
-                          {matchScore > 25 && <li>Matches your budget range</li>}
-                          {matchScore > 15 && <li>Meets your usage requirements</li>}
-                          {matchScore > 10 && <li>Aligned with your priorities</li>}
+                          {scores[index]?.reasons?.length > 0 ? (
+                            scores[index].reasons.map((reason, i) => (
+                              <li key={i}>{reason}</li>
+                            ))
+                          ) : (
+                            <li>Matches your preferences</li>
+                          )}
                         </ul>
                       </div>
                     </div>
