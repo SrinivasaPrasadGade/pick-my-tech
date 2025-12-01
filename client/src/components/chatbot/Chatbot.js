@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaRobot, FaTimes, FaPaperPlane, FaBolt } from 'react-icons/fa';
+import { FaRobot, FaTimes, FaPaperPlane, FaBolt, FaChevronRight } from 'react-icons/fa';
 import './Chatbot.css';
 
 const Chatbot = () => {
@@ -10,7 +10,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     {
       type: 'bot',
-      text: "Hi! 👋 I'm Maverick, your tech assistant. How can I help you today?",
+      text: "Hi! 👋 I'm Maverick. I can help you find devices, compare specs, or answer tech questions. Try asking 'Show me gaming phones under 30k'!",
       timestamp: new Date()
     }
   ]);
@@ -26,13 +26,15 @@ const Chatbot = () => {
     scrollToBottom();
   }, [messages, isOpen]);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
+  const handleSend = async (e, textOverride = null) => {
+    if (e) e.preventDefault();
+    const textToSend = textOverride || input;
+
+    if (!textToSend.trim() || loading) return;
 
     const userMessage = {
       type: 'user',
-      text: input,
+      text: textToSend,
       timestamp: new Date()
     };
 
@@ -41,167 +43,135 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post('/api/chatbot', { message: userMessage.text });
+      const res = await axios.post('/api/chatbot', { message: textToSend });
+      const { action, response, data, suggestions } = res.data;
+
       const botResponse = {
         type: 'bot',
-        text: res.data.response,
-        suggestions: res.data.suggestions,
-        action: res.data.action,
-        data: res.data.data,
+        text: response,
+        action,
+        data,
+        suggestions,
         timestamp: new Date()
       };
+
       setMessages(prev => [...prev, botResponse]);
 
-      // Handle actions
-      if (botResponse.action === 'navigate' && botResponse.data?.path) {
+      // Handle Auto-Navigation
+      if (action === 'navigate' && data?.path) {
+        // Add a small delay so user can read the message
         setTimeout(() => {
-          navigate(botResponse.data.path);
-          // Don't close automatically for navigation, let user read the message
-        }, 1500);
-      } else if (botResponse.action === 'search' && botResponse.data) {
-        setTimeout(() => {
-          const params = new URLSearchParams();
-          if (botResponse.data.category) params.append('category', botResponse.data.category);
-          if (botResponse.data.brand) params.append('brand', botResponse.data.brand);
-          if (botResponse.data.maxPrice) params.append('maxPrice', botResponse.data.maxPrice);
-          navigate(`/devices?${params.toString()}`);
-        }, 1500);
-      } else if (botResponse.action === 'recommend') {
-        setTimeout(() => {
-          navigate('/recommendations');
+          navigate(data.path);
         }, 1500);
       }
+
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage = {
+      setMessages(prev => [...prev, {
         type: 'bot',
-        text: 'Sorry, I encountered an error. Please try again.',
+        text: "Sorry, I'm having trouble connecting right now. Please try again.",
         timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSuggestion = (suggestion) => {
-    setInput(suggestion);
-    // Auto-send suggestion
-    setTimeout(() => {
-      // We need to trigger the send logic manually since we can't easily simulate a form submit event with the state update pending
-      // So we'll just call a version of handleSend or set a flag
-      // For simplicity, let's just set the input and let the user press enter, OR better:
-      // We can't easily reuse handleSend because it expects an event. 
-      // Let's refactor handleSend to be callable without event or just duplicate logic for now to be safe
-      // Actually, the previous implementation had a hacky event simulation. Let's do it properly.
-      sendText(suggestion);
-    }, 100);
-  };
-
-  const sendText = async (text) => {
-    if (!text.trim() || loading) return;
-
-    const userMessage = {
-      type: 'user',
-      text: text,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setLoading(true);
-
-    try {
-      const res = await axios.post('/api/chatbot', { message: text });
-      const botResponse = {
-        type: 'bot',
-        text: res.data.response,
-        suggestions: res.data.suggestions,
-        action: res.data.action,
-        data: res.data.data,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
-
-      if (botResponse.action === 'navigate' && botResponse.data?.path) {
-        setTimeout(() => navigate(botResponse.data.path), 1500);
-      } else if (botResponse.action === 'search' && botResponse.data) {
-        setTimeout(() => {
-          const params = new URLSearchParams();
-          if (botResponse.data.category) params.append('category', botResponse.data.category);
-          if (botResponse.data.brand) params.append('brand', botResponse.data.brand);
-          if (botResponse.data.maxPrice) params.append('maxPrice', botResponse.data.maxPrice);
-          navigate(`/devices?${params.toString()}`);
-        }, 1500);
-      } else if (botResponse.action === 'recommend') {
-        setTimeout(() => navigate('/recommendations'), 1500);
-      }
-    } catch (error) {
-      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, error occurred.', timestamp: new Date() }]);
-    } finally {
-      setLoading(false);
+  const handleSuggestionClick = (suggestion) => {
+    if (suggestion === 'View Full Details' && messages[messages.length - 1].data?.deviceId) {
+      navigate(`/devices/${messages[messages.length - 1].data.deviceId}`);
+      return;
     }
+    handleSend(null, suggestion);
   };
 
-  const quickActions = [
-    { text: 'Find phones', action: 'Find mobile phones' },
-    { text: 'Browse laptops', action: 'Show me laptops' },
-    { text: 'Get recommendations', action: 'Get recommendations' },
-    { text: 'Tech news', action: 'Show tech news' }
-  ];
-
-  // Helper to render text with newlines, bold, and bullet points
-  const renderText = (text) => {
-    return text.split('\n').map((line, i) => {
-      // Handle bullet points
-      const isBullet = line.trim().startsWith('- ');
-      const content = isBullet ? line.trim().substring(2) : line;
-
-      const formattedContent = content.split(/(\*\*.*?\*\*)/).map((part, j) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={j}>{part.slice(2, -2)}</strong>;
-        }
-        return part;
-      });
-
-      if (isBullet) {
-        return (
-          <div key={i} className="message-bullet">
-            <span className="bullet-point">•</span>
-            <span>{formattedContent}</span>
-          </div>
-        );
-      }
-
+  const renderContent = (msg) => {
+    // 1. Text Content with Markdown-like formatting
+    const formattedText = msg.text.split('\n').map((line, i) => {
+      // Bold text
+      const parts = line.split(/(\*\*.*?\*\*)/);
       return (
-        <React.Fragment key={i}>
-          {formattedContent}
-          <br />
-        </React.Fragment>
+        <div key={i} className="message-line">
+          {parts.map((part, j) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return <strong key={j}>{part.slice(2, -2)}</strong>;
+            }
+            return part;
+          })}
+        </div>
       );
     });
+
+    // 2. Device Cards (Carousel)
+    let deviceCards = null;
+    if (msg.action === 'render_devices' && msg.data && Array.isArray(msg.data)) {
+      deviceCards = (
+        <div className="device-carousel">
+          {msg.data.map((device) => (
+            <div
+              key={device._id}
+              className="chat-device-card"
+              onClick={() => navigate(`/devices/${device._id}`)}
+            >
+              <div className="chat-device-image">
+                <img src={device.image || 'https://via.placeholder.com/100'} alt={device.name} />
+              </div>
+              <div className="chat-device-info">
+                <h4>{device.brand} {device.name}</h4>
+                <p className="price">
+                  {device.prices?.[0]?.price ? `₹${device.prices[0].price}` : 'N/A'}
+                </p>
+                <div className="rating">
+                  <span>⭐ {device.averageRating || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="message-content-wrapper">
+        <div className="text-content">{formattedText}</div>
+        {deviceCards}
+        {msg.suggestions && (
+          <div className="chat-suggestions">
+            {msg.suggestions.map((s, idx) => (
+              <button key={idx} onClick={() => handleSuggestionClick(s)}>
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
     <>
       {!isOpen && (
         <button className="chatbot-toggle" onClick={() => setIsOpen(true)}>
-          <FaRobot />
-          <span>Maverick</span>
+          <div className="toggle-icon">
+            <FaRobot />
+          </div>
+          <span className="toggle-text">Chat with Maverick</span>
         </button>
       )}
 
       {isOpen && (
         <div className="chatbot-container">
           <div className="chatbot-header">
-            <div className="chatbot-title">
-              <FaRobot className="robot-icon" />
+            <div className="header-info">
+              <div className="avatar">
+                <FaRobot />
+              </div>
               <div>
                 <h3>Maverick</h3>
-                <p>Your Tech Assistant</p>
+                <p>AI Tech Assistant</p>
               </div>
             </div>
-            <button className="chatbot-close" onClick={() => setIsOpen(false)}>
+            <button className="close-btn" onClick={() => setIsOpen(false)}>
               <FaTimes />
             </button>
           </div>
@@ -209,67 +179,37 @@ const Chatbot = () => {
           <div className="chatbot-messages">
             {messages.map((msg, index) => (
               <div key={index} className={`message ${msg.type}`}>
-                <div className="message-content">
-                  <p>{renderText(msg.text)}</p>
-                  {msg.suggestions && msg.suggestions.length > 0 && (
-                    <div className="suggestions">
-                      {msg.suggestions.map((suggestion, idx) => (
-                        <button
-                          key={idx}
-                          className="suggestion-btn"
-                          onClick={() => handleSuggestion(suggestion)}
-                        >
-                          {suggestion}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                {msg.type === 'bot' && (
+                  <div className="bot-avatar-small">
+                    <FaRobot />
+                  </div>
+                )}
+                <div className="message-bubble">
+                  {renderContent(msg)}
                 </div>
-                <span className="message-time">
-                  {new Date(msg.timestamp).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </span>
               </div>
             ))}
             {loading && (
               <div className="message bot">
-                <div className="message-content">
-                  <div className="typing-indicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
+                <div className="bot-avatar-small">
+                  <FaRobot />
+                </div>
+                <div className="message-bubble typing">
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {messages.length === 1 && (
-            <div className="quick-actions">
-              <p>Quick Actions:</p>
-              <div className="quick-buttons">
-                {quickActions.map((action, index) => (
-                  <button
-                    key={index}
-                    className="quick-btn"
-                    onClick={() => handleSuggestion(action.action)}
-                  >
-                    <FaBolt /> {action.text}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <form onSubmit={handleSend} className="chatbot-input">
+          <form onSubmit={handleSend} className="chatbot-input-area">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
+              placeholder="Ask about phones, laptops..."
               disabled={loading}
             />
             <button type="submit" disabled={loading || !input.trim()}>
@@ -283,4 +223,3 @@ const Chatbot = () => {
 };
 
 export default Chatbot;
-
