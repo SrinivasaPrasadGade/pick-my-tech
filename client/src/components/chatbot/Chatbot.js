@@ -155,7 +155,6 @@ const Chatbot = () => {
           <div className="toggle-icon">
             <FaRobot />
           </div>
-          <span className="toggle-text">Chat with Maverick</span>
         </button>
       )}
 
