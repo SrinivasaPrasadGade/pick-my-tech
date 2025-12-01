@@ -319,7 +319,8 @@ const QuizContent = () => {
       navigate('/recommendations');
     } catch (error) {
       console.error('Error submitting quiz:', error);
-      alert('Error submitting quiz. Please try again.');
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      alert(`Error submitting quiz: ${errorMessage}`);
     }
   };
 
